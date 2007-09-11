@@ -1,0 +1,265 @@
+body {
+	padding:0;
+	margin:0;	
+	background-color: #eee;
+	text-align: center; /*center for IE*/
+}
+
+#content { 	
+	text-align: left; /*center for IE*/
+	background-color: #fff; 	 
+	width: 550px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:0;
+	padding: 15px 25px 25px 25px;
+	border: 1px solid #ddd;
+}
+
+html>body #content {
+	width:500px; /* this will be IE ignored, it handles the IE box model bug, allowing the same width in all browsers */
+}
+
+body, p, ol, ul, td {
+  font-family:  "trebuchet ms","lucida sans",verdana, arial, helvetica, sans-serif;
+  font-size:   11pt;
+	color: #0066ff;
+}
+
+/*h1 .logo {
+	font-size: 90pt;
+	float: left;
+	color: green;
+	margin-right: 9pt;
+	letter-spacing: -7pt;
+	margin-bottom: -70pt;
+	margin-top: -12pt;
+	margin-left:-7pt;
+}
+
+.logo .lsquo
+{
+	color: red;
+}
+
+h1
+{
+	margin-top:0;
+	color: navy;
+	font-size: 30pt;
+	letter-spacing:-1px;
+}*/
+
+h1
+{	
+	margin-top:0;
+	padding: 59px 0 0 0; /* image height */
+  overflow: hidden;
+  background-image: url("/images/logo.gif"); 
+  background-repeat: no-repeat;
+  width: 200px; /* image width */
+  height: 0px !important; /* for most browsers */
+  height /**/:59px; /* for IE5.5's bad box model */
+	
+}
+
+a
+{
+	color:#CC3366;
+	text-decoration:none;
+	font-weight:bold;	
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+h2 {
+	margin-top:10pt;
+	color: #0066ff;
+	font-size: 14pt;
+	
+}
+
+.quote
+{	
+	
+	margin-bottom: 12pt;
+	padding-bottom:16px;
+	width:auto;
+	background: url(/images/dotted_horizontal_border.gif) bottom repeat-x;
+	
+}
+blockquote a
+{
+	
+	font-weight:normal;
+}
+
+blockquote p, blockquote a
+{
+	color: green;
+}
+
+blockquote p.first_p
+{
+	margin-top:0;
+}
+
+blockquote p
+{
+	margin-bottom:0;
+}
+
+
+
+.author_and_source
+{
+	text-align: right;
+	margin-top: 8pt;
+	font-size: 14pt;
+	float:right;
+	margin-bottom:0;
+	padding-bottom:0;
+	
+}
+
+.author_and_source a
+{
+	color: #0066ff;
+}
+
+
+.quote .publish_time, .quote .publish_time a
+{
+	color: #aaa;
+}
+
+.quote .footer
+{
+	clear:both;
+}
+
+.source, .source a
+{
+	font-size:10pt;
+	font-weight:bold;
+	color:#999;
+	
+}
+
+.source
+{
+	display:block;
+}
+
+blockquote
+{
+	background-color: #eee;
+	margin:0;
+	padding: 10pt;
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+
+ul.menu a, .expandable_form
+{
+	background-color: #eee;
+	padding:10pt;
+	padding-top:5pt;
+	padding-bottom:5pt;
+	text-align:left;
+}
+
+.expandable_form
+{
+	margin-top:6px;
+}
+
+ul.menu
+{
+	text-align:right;	
+	margin-bottom:0;
+}
+
+ul.menu li
+{	
+	list-style-type:none;
+	display:inline;
+}
+
+#new_quote_expander, #new_quote
+{
+	background-color: #EAF5E5;
+	color: #390;
+}
+
+#new_user_expander, #new_user
+{
+	background-color: #FAEAEF;
+	color: #C36;
+}
+
+#login_form_expander, #login_form, #logout_link	
+{
+	background-color: #E5EFFF;
+	color: #06F;	
+}
+
+#quote_text
+{
+	width:100%;
+	padding:5px;
+	font-size:12pt;
+	height: 59pt;
+}
+
+#quote_author, #quote_source_url
+{
+	width:100%;
+}
+
+.size_xxl blockquote p
+{
+	font-size: 22pt;
+}
+
+.size_xl blockquote p
+{
+	font-size: 21pt;
+}
+
+.size_l blockquote p
+{
+	font-size:19pt;
+}
+
+.size_m blockquote p
+{
+	font-size:18pt;
+}
+
+.size_s blockquote p
+{
+	font-size:16pt;
+}
+
+.size_xs blockquote p
+{
+	font-size:15pt;
+}
+
+.size_xxs blockquote p
+{
+	font-size: 13pt;
+}
+
+blockquote p
+{
+	text-align: justify;
+}
+.size_xxl blockquote p, .size_xl blockquote p, .size_l blockquote p
+{
+	text-align: center;
+}

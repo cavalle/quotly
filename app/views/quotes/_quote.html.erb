@@ -1,0 +1,12 @@
+<div class="quote <%= get_size_class(quote.text) %>">
+		<blockquote>
+			<%= html_format_quote(quote.text) %>
+		</blockquote>
+		<p class="author_and_source"><%= quote.author %> 
+		<% if quote.source_url && quote.source_url.length > 0 %>
+		<span class="source">(<%= get_source_link(quote.source_url) %>)</span>
+		<% end %>
+		</p>
+		<p class="publish_time">Published <%= distance_of_time_in_words(Time.now, quote.created_at) %> ago by <%= quote.user.nickname %></p>
+		<div class="footer"></div>
+</div>
