@@ -23,7 +23,15 @@ ActionController::Routing::Routes.draw do |map|
   
   map.root :controller => 'quotes', :action => 'index'
   
-  map.resources :quotes, :users
+  map.resources :quotes
+  
+  map.resources :users do |user|
+    user.resources :quotes
+  end
+  
+  map.resources :authors do |author|
+    author.resources :quotes
+  end
   
   map.resource  :session
   

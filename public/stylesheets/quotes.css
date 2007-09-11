@@ -26,41 +26,9 @@ body, p, ol, ul, td {
 	color: #0066ff;
 }
 
-/*h1 .logo {
-	font-size: 90pt;
-	float: left;
-	color: green;
-	margin-right: 9pt;
-	letter-spacing: -7pt;
-	margin-bottom: -70pt;
-	margin-top: -12pt;
-	margin-left:-7pt;
-}
-
-.logo .lsquo
+a img
 {
-	color: red;
-}
-
-h1
-{
-	margin-top:0;
-	color: navy;
-	font-size: 30pt;
-	letter-spacing:-1px;
-}*/
-
-h1
-{	
-	margin-top:0;
-	padding: 59px 0 0 0; /* image height */
-  overflow: hidden;
-  background-image: url("/images/logo.gif"); 
-  background-repeat: no-repeat;
-  width: 200px; /* image width */
-  height: 0px !important; /* for most browsers */
-  height /**/:59px; /* for IE5.5's bad box model */
-	
+	border:0;
 }
 
 a
