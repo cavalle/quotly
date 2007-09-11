@@ -1,19 +1,20 @@
 body {
 	padding:0;
 	margin:0;	
-	background-color: #eee;
+	background: #E5EFFF url(/images/blue-back.gif) repeat-x top;
 	text-align: center; /*center for IE*/
 }
 
 #content { 	
 	text-align: left; /*center for IE*/
-	background-color: #fff; 	 
+	background-color: white; 	 
 	width: 550px;
 	margin-left:auto;
 	margin-right:auto;
 	margin-top:0;
 	padding: 15px 25px 25px 25px;
-	border: 1px solid #ddd;
+	border: 1px solid #C6CFDD;
+	border-top:0;
 }
 
 html>body #content {
