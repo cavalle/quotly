@@ -23,7 +23,7 @@ ActionController::Routing::Routes.draw do |map|
   
   map.root :controller => 'quotes', :action => 'index'
   
-  map.resources :quotes
+  map.resources :quotes, :users
   
   map.resources :quotes, :path_prefix => '/users/:user_login', :name_prefix => 'user_'
   
