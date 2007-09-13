@@ -1,0 +1,3 @@
+page.hide 'new_quote'
+page.insert_html :top, 'quotes_list', :partial => 'quote'
+page.visual_effect :highlight, "quote_#{@quote.id}", :duration => 1.5

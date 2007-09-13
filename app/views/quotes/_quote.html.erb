@@ -1,5 +1,5 @@
 <div class="quote <%= get_size_class(quote.text) %>">
-		<blockquote>
+		<blockquote id="quote_<%= quote.id %>">
 			<%= html_format_quote(quote.text) %>
 		</blockquote>
 		<p class="author_and_source"><%= link_to quote.author, author_quotes_url(quote.author) %> 

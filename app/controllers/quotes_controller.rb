@@ -25,8 +25,9 @@ class QuotesController < ApplicationController
   end
   
   def create    
-    if @quote = current_user.quotes.create(params[:quote])
-      render :partial => 'quote', :quote => @quote    
+    @quote = current_user.quotes.create(params[:quote])    
+    respond_to do |format|
+      format.js
     end
   end
   

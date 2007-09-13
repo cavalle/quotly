@@ -10,17 +10,14 @@
 
 <div class="expandable_forms">
 	<div id="new_quote" class="expandable_form" style="display:none">
-	  <% if logged_in? %>
-		<% form_remote_tag :complete => 
-			"new Insertion.Top('quotes_list',\"<div id='created_quote'>\" + request.responseText + \"</div>\");
-			Element.toggle('new_quote');", 
-			:url => {:action => 'create', :id => @quote} do -%>
+	  <% if logged_in? -%>
+		<% form_remote_tag :url => quotes_path do -%>
 		  <%= render :partial => 'form' %>
 		  <%= submit_tag 'Create!' %>
-		<% end %>
-		<% else %>
+		<% end -%>
+		<% else -%>
 		<p>You need to be <a href="#" onclick="$('new_user_expander').onclick();">registered</a> and <a href="#" onclick="$('login_form_expander').onclick();">logged in</a></p>
-		<% end %>
+		<% end -%>
 	</div>
 
 	<% if not logged_in? %>
