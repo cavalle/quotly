@@ -25,13 +25,9 @@ ActionController::Routing::Routes.draw do |map|
   
   map.resources :quotes
   
-  map.resources :users do |user|
-    user.resources :quotes
-  end
+  map.resources :quotes, :path_prefix => '/users/:user_login', :name_prefix => 'user_'
   
-  map.resources :authors do |author|
-    author.resources :quotes
-  end
+  map.resources :quotes, :path_prefix => '/authors/:author_name', :name_prefix => 'author_'
   
   map.resource  :session
   

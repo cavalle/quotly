@@ -1,22 +1,36 @@
 class QuotesController < ApplicationController
   def index    
-    if login = params[:user_id]
+    options = { :page => params[:page], :per_page => 10, :order => 'created_at DESC' }
+    
+    if login = params[:user_login]
       user = User.find_by_login(login)
       @title = "Quotes published by #{user.login}"
-      @quotes = user.quotes.paginate :page => params[:page], :per_page => 10, :order => 'created_at DESC'
-    elsif author = params[:author_id]
+      @quotes = user.quotes.paginate options
+      @rss_url = user_quotes_url(login, :format => :rss)
+    elsif author = params[:author_name]
       @title = "Quotes by #{author}"
-      @quotes = Quote.paginate_by_author author, :page => params[:page], :per_page => 10, :order => 'created_at DESC'
+      @quotes = Quote.paginate_by_author author, options
+      @rss_url = author_quotes_url(author, :format => :rss)
     else
       @title = "Latest quotes"
-      @quotes = Quote.paginate :page => params[:page], :per_page => 10, :order => 'created_at DESC'
+      @quotes = Quote.paginate options
+      @rss_url = quotes_url(:format => :rss)
+    end  
+    
+    respond_to do |format|
+      format.html
+      format.rss  { render :layout => false }
+      format.xml  { render :xml => @quotes.to_xml }
     end
   end
   
-  def create
-    @quote = current_user.quotes.create(params[:quote])
-    if @quote
+  def create    
+    if @quote = current_user.quotes.create(params[:quote])
       render :partial => 'quote', :quote => @quote    
     end
+  end
+  
+  def show
+    @quote = Quote.find(params[:id])
   end
 end
