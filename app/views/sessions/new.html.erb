@@ -1,0 +1,7 @@
+<h2>Login</h2>
+<div id="login_form" class="expandable_form">
+	<% form_tag session_path do -%>
+	<%= render :partial => 'form' %>
+	or <%= link_to 'Cancel', root_url %>
+	<% end -%>
+</div>

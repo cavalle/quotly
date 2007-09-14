@@ -5,9 +5,9 @@ class UsersController < ApplicationController
     @user.save!
     self.current_user = @user
     redirect_back_or_default('/')
-    flash[:notice] = "Thanks for signing up!"
+    flash[:notice] = "Thanks for signing up!"    
   rescue ActiveRecord::RecordInvalid
-    render :action => 'new'
+    render :action => :new
   end
 
   def activate

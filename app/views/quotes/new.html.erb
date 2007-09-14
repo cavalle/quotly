@@ -1,0 +1,7 @@
+<h2>New quote</h2>
+<div id="new_quote" class="expandable_form">
+	<% form_for :quote, :url => quotes_path do |f| -%>
+	  <%= render :partial => 'form', :locals => { :f => f } %>
+		or <%= link_to 'Cancel', root_path %>
+	<% end -%>	
+</div>

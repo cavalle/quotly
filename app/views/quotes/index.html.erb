@@ -1,62 +1,40 @@
 <ul class="menu">
-    <li><a href="#" id="new_quote_expander" class="expander" onclick="<% if not logged_in? %>Element.hide('new_user');Element.hide('login_form');<% end %>Element.toggle('new_quote'); if (Element.visible('new_quote') && $('quote_text')) {Field.focus('quote_text');} return false;">New quote</a></li>
-    <% if logged_in? %>
-		<li><%= link_to 'Logout', session_path, :method => :delete, 'id' => 'logout_link'%></li>
-    <% else %>
-		<li><a href="#" id="new_user_expander" class="expander" onclick="Element.hide('new_quote');Element.hide('login_form');Element.toggle('new_user'); if (Element.visible('new_user')) {Field.focus('user_login');} return false;">Register</a></li>   
-    <li><a href="#" id="login_form_expander" class="expander" onclick="Element.hide('new_user');Element.hide('new_quote');Element.toggle('login_form'); if (Element.visible('login_form')) {Field.focus('login');} return false;">Login</a></li>    
-    <% end %>
+    <li><a href="<%= new_quote_path %>" id="new_quote_expander" class="expander" onclick="<% if not logged_in? %>Element.hide('new_user');Element.hide('login_form');<% end %>Element.toggle('new_quote'); if (Element.visible('new_quote') && $('quote_text')) {Field.focus('quote_text');} return false;">New quote</a></li>
+    <% if logged_in? -%>
+		<li><%= link_to 'Logout', logout_path, :method => :delete, :id => 'logout_link' %></li>
+    <% else -%>
+		<li><a href="<%= new_user_path %>" id="new_user_expander" class="expander" onclick="Element.hide('new_quote');Element.hide('login_form');Element.toggle('new_user'); if (Element.visible('new_user')) {Field.focus('user_login');} return false;">Register</a></li>   
+    <li><a href="<%= login_path %>" id="login_form_expander" class="expander" onclick="Element.hide('new_user');Element.hide('new_quote');Element.toggle('login_form'); if (Element.visible('login_form')) {Field.focus('login');} return false;">Login</a></li>    
+    <% end -%>
 </ul>
 
 <div class="expandable_forms">
 	<div id="new_quote" class="expandable_form" style="display:none">
 	  <% if logged_in? -%>
-		<% form_remote_tag :url => quotes_path do -%>
-		  <%= render :partial => 'form' %>
-		  <%= submit_tag 'Create!' %>
+		<% form_remote_for :quote, :url => quotes_path do |f| -%>
+		  <%= render :partial => 'form', :locals => { :f => f } %>
+			or <a href="#" onclick="Element.hide('new_quote');return false;">Cancel</a>
 		<% end -%>
 		<% else -%>
 		<p>You need to be <a href="#" onclick="$('new_user_expander').onclick();">registered</a> and <a href="#" onclick="$('login_form_expander').onclick();">logged in</a></p>
 		<% end -%>
 	</div>
 
-	<% if not logged_in? %>
-		<div id="new_user" class="expandable_form" style="display:none">
-			<%= error_messages_for :user %>
-			<% form_for :user, :url => users_path do |f| -%>
-			<p><label for="login">Login</label><br/>
-			<%= f.text_field :login %></p>
-
-			<p><label for="email">Email</label><br/>
-			<%= f.text_field :email %></p>
-
-			<p><label for="password">Password</label><br/>
-			<%= f.password_field :password %></p>
-
-			<p><label for="password_confirmation">Confirm Password</label><br/>
-			<%= f.password_field :password_confirmation %></p>
-
-			<p><%= submit_tag 'Sign up' %></p>
-			<% end -%>
-		</div>
-	<% end %>
-
-	<% if not logged_in? %>
-	<div id="login_form" class="expandable_form" style="display:none">
-		<% form_tag session_path do -%>
-		<p><label for="login">Login</label><br/>
-		<%= text_field_tag 'login' %></p>
-
-		<p><label for="password">Password</label><br/>
-		<%= password_field_tag 'password' %></p>
-
-		<p><label for="remember_me">Remember me:</label>
-		<%= check_box_tag 'remember_me' %></p>
-
-		<p><%= submit_tag 'Log in' %></p>
+	<% if not logged_in? -%>
+	<div id="new_user" class="expandable_form" style="display:none">
+		<% form_for :user, :url => users_path do |f| -%>
+		<%= render :partial => 'users/form', :locals => {:f => f} -%>
+		or <a href="#" onclick="Element.hide('new_user');">Cancel</a>
 		<% end -%>
 	</div>
-	<% end %>
+	
+	<div id="login_form" class="expandable_form" style="display:none">
+		<% form_tag session_path do -%>
+		<%= render :partial => 'sessions/form'%>
+		or <a href="#" onclick="Element.hide('login_form');return false;">Cancel</a>
+		<% end -%>
+	</div>
+	<% end -%>
 
 </div>
 

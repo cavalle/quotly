@@ -1,4 +1,6 @@
 class QuotesController < ApplicationController
+  before_filter :login_required, :except => :index
+  
   def index    
     options = { :page => params[:page], :per_page => 10, :order => 'created_at DESC' }
     
@@ -27,6 +29,7 @@ class QuotesController < ApplicationController
   def create    
     @quote = current_user.quotes.create(params[:quote])    
     respond_to do |format|
+      format.html { redirect_to quotes_path }
       format.js
     end
   end
