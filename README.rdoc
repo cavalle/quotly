@@ -1,0 +1,7 @@
+== Quotes
+
+Quotes is a web application that allow users to manage their own collections of quotations in a social fashion. The application is online at http://q.uot.es. 
+
+It's written with *beautiful code* and it serves as a *demo application* and a *sandbox* for the author.
+
+Copyright (c) 2008 Luis Miguel Cavallé San Miguel
