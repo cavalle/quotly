@@ -1,5 +1,6 @@
 require "#{File.dirname(__FILE__)}/../abstract_unit"
 require "#{File.dirname(__FILE__)}/fake_controllers"
+require "action_controller/test_case"
 
 class TestTest < Test::Unit::TestCase
   class TestController < ActionController::Base
@@ -23,6 +24,10 @@ class TestTest < Test::Unit::TestCase
 
     def test_uri
       render :text => request.request_uri
+    end
+
+    def test_query_string
+      render :text => request.query_string
     end
 
     def test_html_output
@@ -68,6 +73,10 @@ XML
       render :text => params[:file].size
     end
 
+    def test_send_file
+      send_file(File.expand_path(__FILE__))
+    end
+
     def redirect_to_same_controller
       redirect_to :controller => 'test', :action => 'test_uri', :id => 5
     end
@@ -104,7 +113,7 @@ XML
 
   def test_raw_post_handling
     params = {:page => {:name => 'page name'}, 'some key' => 123}
-    get :render_raw_post, params.dup
+    post :render_raw_post, params.dup
 
     assert_equal params.to_query, @response.body
   end
@@ -112,7 +121,7 @@ XML
   def test_body_stream
     params = { :page => { :name => 'page name' }, 'some key' => 123 }
 
-    get :render_body, params.dup
+    post :render_body, params.dup
 
     assert_equal params.to_query, @response.body
   end
@@ -141,6 +150,17 @@ XML
     @request.set_REQUEST_URI "/explicit/uri"
     process :test_uri, :id => 7
     assert_equal "/explicit/uri", @response.body
+  end
+
+  def test_process_with_query_string
+    process :test_query_string, :q => 'test'
+    assert_equal "q=test", @response.body
+  end
+
+  def test_process_with_query_string_with_explicit_uri
+    @request.set_REQUEST_URI "/explicit/uri?q=test?extra=question"
+    process :test_query_string
+    assert_equal "q=test?extra=question", @response.body
   end
 
   def test_multiple_calls
@@ -198,7 +218,7 @@ XML
   def test_assert_tag_descendant
     process :test_html_output
 
-    # there is a tag with a decendant 'li' tag
+    # there is a tag with a descendant 'li' tag
     assert_tag :descendant => { :tag => "li" }
     # there is no tag with a descendant 'html' tag
     assert_no_tag :descendant => { :tag => "html" }
@@ -225,9 +245,9 @@ XML
   def test_assert_tag_before
     process :test_html_output
 
-    # there is a tag preceeding a tag with id 'bar'
+    # there is a tag preceding a tag with id 'bar'
     assert_tag :before => { :attributes => { :id => "bar" } }
-    # there is no tag preceeding a 'form' tag
+    # there is no tag preceding a 'form' tag
     assert_no_tag :before => { :tag => "form" }
   end
 
@@ -460,6 +480,30 @@ XML
     assert_equal file.path, file.local_path
     assert_equal File.read(path), file.read
   end
+  
+  def test_test_uploaded_file_with_binary
+    filename = 'mona_lisa.jpg'
+    path = "#{FILES_DIR}/#{filename}"
+    content_type = 'image/png'
+    
+    binary_uploaded_file = ActionController::TestUploadedFile.new(path, content_type, :binary)
+    assert_equal File.open(path, 'rb').read, binary_uploaded_file.read
+    
+    plain_uploaded_file = ActionController::TestUploadedFile.new(path, content_type)
+    assert_equal File.open(path, 'r').read, plain_uploaded_file.read
+  end
+
+  def test_fixture_file_upload_with_binary
+    filename = 'mona_lisa.jpg'
+    path = "#{FILES_DIR}/#{filename}"
+    content_type = 'image/jpg'
+    
+    binary_file_upload = fixture_file_upload(path, content_type, :binary)
+    assert_equal File.open(path, 'rb').read, binary_file_upload.read
+    
+    plain_file_upload = fixture_file_upload(path, content_type)
+    assert_equal File.open(path, 'r').read, plain_file_upload.read
+  end
 
   def test_fixture_file_upload
     post :test_file_upload, :file => fixture_file_upload(FILES_DIR + "/mona_lisa.jpg", "image/jpg")
@@ -502,6 +546,11 @@ XML
     end
   end
 
+  def test_binary_content_works_with_send_file
+    get :test_send_file
+    assert_nothing_raised(NoMethodError) { @response.binary_content }
+  end
+  
   protected
     def with_foo_routing
       with_routing do |set|
@@ -541,3 +590,34 @@ class CleanBacktraceTest < Test::Unit::TestCase
     assert !caught.backtrace.empty?
   end
 end
+
+class InferringClassNameTest < Test::Unit::TestCase
+  def test_determine_controller_class
+    assert_equal ContentController, determine_class("ContentControllerTest")
+  end
+
+  def test_determine_controller_class_with_nonsense_name
+    assert_raises ActionController::NonInferrableControllerError do
+      determine_class("HelloGoodBye")
+    end
+  end
+
+  def test_determine_controller_class_with_sensible_name_where_no_controller_exists
+    assert_raises ActionController::NonInferrableControllerError do
+      determine_class("NoControllerWithThisNameTest")
+    end
+  end
+
+  private
+    def determine_class(name)
+      ActionController::TestCase.determine_default_controller_class(name)
+    end
+end
+
+class CrazyNameTest < ActionController::TestCase
+  tests ContentController
+  def test_controller_class_can_be_set_manually_not_just_inferred
+    assert_equal ContentController, self.class.controller_class
+  end
+end
+

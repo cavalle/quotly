@@ -241,11 +241,11 @@ class NewRenderTestController < ActionController::Base
   end
 
   def hello_world_from_rxml_using_action
-    render :action => "hello_world.builder"
+    render :action => "hello_world_from_rxml.builder"
   end
 
   def hello_world_from_rxml_using_template
-    render :template => "test/hello_world.builder"
+    render :template => "test/hello_world_from_rxml.builder"
   end
 
   def head_with_location_header
@@ -689,12 +689,12 @@ EOS
 
   def test_partial_with_hash_object
     get :partial_with_hash_object
-    assert_equal "Sam", @response.body
+    assert_equal "Sam\nmaS\n", @response.body
   end
   
   def test_hash_partial_collection
     get :partial_hash_collection
-    assert_equal "PratikAmy", @response.body
+    assert_equal "Pratik\nkitarP\nAmy\nymA\n", @response.body
   end
   
   def test_partial_hash_collection_with_locals

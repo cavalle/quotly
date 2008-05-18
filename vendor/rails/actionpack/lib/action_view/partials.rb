@@ -50,23 +50,23 @@ module ActionView
   # Partials can have their own layouts applied to them. These layouts are different than the ones that are specified globally
   # for the entire action, but they work in a similar fashion. Imagine a list with two types of users:
   #
-  #   <!-- app/views/users/index.html.erb -->
+  #   <%# app/views/users/index.html.erb &>
   #   Here's the administrator:
   #   <%= render :partial => "user", :layout => "administrator", :locals => { :user => administrator } %>
   #
   #   Here's the editor:
   #   <%= render :partial => "user", :layout => "editor", :locals => { :user => editor } %>
   #
-  #   <!-- app/views/users/_user.html.erb -->
+  #   <%# app/views/users/_user.html.erb &>
   #   Name: <%= user.name %>
   #
-  #   <!-- app/views/users/_administrator.html.erb -->
+  #   <%# app/views/users/_administrator.html.erb &>
   #   <div id="administrator">
   #     Budget: $<%= user.budget %>
   #     <%= yield %>
   #   </div>
   #
-  #   <!-- app/views/users/_editor.html.erb -->
+  #   <%# app/views/users/_editor.html.erb &>
   #   <div id="editor">
   #     Deadline: $<%= user.deadline %>
   #     <%= yield %>
@@ -88,7 +88,7 @@ module ActionView
   #
   # You can also apply a layout to a block within any template:
   #
-  #   <!-- app/views/users/_chief.html.erb -->
+  #   <%# app/views/users/_chief.html.erb &>
   #   <% render(:layout => "administrator", :locals => { :user => chief }) do %>
   #     Title: <%= chief.title %>
   #   <% end %>
@@ -112,14 +112,14 @@ module ActionView
           add_counter_to_local_assigns!(partial_name, local_assigns)
           add_object_to_local_assigns!(partial_name, local_assigns, object)
 
-          if logger
+          if logger && logger.debug?
             ActionController::Base.benchmark("Rendered #{path}/_#{partial_name}", Logger::DEBUG, false) do
               render("#{path}/_#{partial_name}", local_assigns)
             end
           else
             render("#{path}/_#{partial_name}", local_assigns)
           end
-        when Array, ActiveRecord::Associations::AssociationCollection
+        when Array, ActiveRecord::Associations::AssociationCollection, ActiveRecord::Associations::HasManyThroughAssociation
           if partial_path.any?
             path       = ActionController::RecordIdentifier.partial_path(partial_path.first)
             collection = partial_path
@@ -187,12 +187,14 @@ module ActionView
 
       def add_object_to_local_assigns!(partial_name, local_assigns, object)
         variable_name = partial_variable_name(partial_name)
-        local_assigns[variable_name] ||=
-          if object.is_a?(ActionView::Base::ObjectWrapper)
-            object.value
-          else
-            object
-          end || controller.instance_variable_get("@#{variable_name}")
+
+        local_assigns[:object] ||=
+          local_assigns[variable_name] ||=
+            if object.is_a?(ActionView::Base::ObjectWrapper)
+              object.value
+            else
+              object
+            end || controller.instance_variable_get("@#{variable_name}")
       end
   end
 end

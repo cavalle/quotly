@@ -1,6 +1,6 @@
 module ActiveRecord
-  # Active Record automatically timestamps create and update if the table has fields
-  # created_at/created_on or updated_at/updated_on.
+  # Active Record automatically timestamps create and update operations if the table has fields
+  # named created_at/created_on or updated_at/updated_on.
   #
   # Timestamping can be turned off by setting
   #   <tt>ActiveRecord::Base.record_timestamps = false</tt>
@@ -12,7 +12,7 @@ module ActiveRecord
       base.alias_method_chain :create, :timestamps
       base.alias_method_chain :update, :timestamps
 
-      base.cattr_accessor :record_timestamps, :instance_writer => false
+      base.class_inheritable_accessor :record_timestamps, :instance_writer => false
       base.record_timestamps = true
     end
 

@@ -10,13 +10,7 @@ module ActiveRecord
         if attributes.is_a?(Array)
           attributes.collect { |attr| build(attr) }
         else
-          record = @reflection.klass.new(attributes)
-          set_belongs_to_association_for(record)
-          
-          @target ||= [] unless loaded?
-          @target << record
-          
-          record
+          build_record(attributes) { |record| set_belongs_to_association_for(record) }
         end
       end
 
@@ -43,7 +37,7 @@ module ActiveRecord
         # If using a custom finder_sql, scan the entire collection.
         if @reflection.options[:finder_sql]
           expects_array = args.first.kind_of?(Array)
-          ids = args.flatten.compact.uniq
+          ids           = args.flatten.compact.uniq.map(&:to_i)
 
           if ids.size == 1
             id = ids.first
@@ -125,14 +119,17 @@ module ActiveRecord
         end
 
         def delete_records(records)
-          if @reflection.options[:dependent]
-            records.each { |r| r.destroy }
-          else
-            ids = quoted_record_ids(records)
-            @reflection.klass.update_all(
-              "#{@reflection.primary_key_name} = NULL", 
-              "#{@reflection.primary_key_name} = #{@owner.quoted_id} AND #{@reflection.klass.primary_key} IN (#{ids})"
-            )
+          case @reflection.options[:dependent]
+            when :destroy
+              records.each(&:destroy)
+            when :delete_all
+              @reflection.klass.delete(records.map(&:id))
+            else
+              ids = quoted_record_ids(records)
+              @reflection.klass.update_all(
+                "#{@reflection.primary_key_name} = NULL", 
+                "#{@reflection.primary_key_name} = #{@owner.quoted_id} AND #{@reflection.klass.primary_key} IN (#{ids})"
+              )
           end
         end
 
@@ -170,7 +167,7 @@ module ActiveRecord
         def construct_scope
           create_scoping = {}
           set_belongs_to_association_for(create_scoping)
-          { :find => { :conditions => @finder_sql, :joins => @join_sql, :readonly => false }, :create => create_scoping }
+          { :find => { :conditions => @finder_sql, :readonly => false, :order => @reflection.options[:order], :limit => @reflection.options[:limit] }, :create => create_scoping }
         end
     end
   end

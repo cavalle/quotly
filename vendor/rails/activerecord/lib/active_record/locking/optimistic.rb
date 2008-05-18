@@ -70,13 +70,13 @@ module ActiveRecord
           return update_without_lock unless locking_enabled?
 
           lock_col = self.class.locking_column
-          previous_value = send(lock_col)
+          previous_value = send(lock_col).to_i
           send(lock_col + '=', previous_value + 1)
 
           begin
             affected_rows = connection.update(<<-end_sql, "#{self.class.name} Update with optimistic locking")
               UPDATE #{self.class.table_name}
-              SET #{quoted_comma_pair_list(connection, attributes_with_quotes(false))}
+              SET #{quoted_comma_pair_list(connection, attributes_with_quotes(false, false))}
               WHERE #{self.class.primary_key} = #{quote_value(id)}
               AND #{self.class.quoted_locking_column} = #{quote_value(previous_value)}
             end_sql

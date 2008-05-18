@@ -1,4 +1,3 @@
-require 'test/unit'
 require 'test/unit/assertions'
 
 module ActionController #:nodoc:
@@ -17,7 +16,7 @@ module ActionController #:nodoc:
   #   assert flash.empty? # makes sure that there's nothing in the flash
   #
   # For historic reasons, the assigns hash uses string-based keys. So assigns[:person] won't work, but assigns["person"] will. To
-  # appease our yearning for symbols, though, an alternative accessor has been deviced using a method call instead of index referencing.
+  # appease our yearning for symbols, though, an alternative accessor has been devised using a method call instead of index referencing.
   # So assigns(:person) will work just like assigns["person"], but again, assigns[:person] will not work.
   #
   # On top of the collections, you have the complete url that a given action redirected to available in redirect_to_url.
@@ -47,7 +46,7 @@ module ActionController #:nodoc:
     def self.included(klass)
       %w(response selector tag dom routing model).each do |kind|
         require "action_controller/assertions/#{kind}_assertions"
-        klass.send :include, const_get("#{kind.camelize}Assertions")
+        klass.module_eval { include const_get("#{kind.camelize}Assertions") }
       end
     end
 

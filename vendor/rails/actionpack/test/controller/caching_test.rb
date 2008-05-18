@@ -2,7 +2,7 @@ require 'fileutils'
 require File.dirname(__FILE__) + '/../abstract_unit'
 
 CACHE_DIR = 'test_cache'
-# Don't change '/../temp/' cavalierly or you might hoze something you don't want hozed
+# Don't change '/../temp/' cavalierly or you might hose something you don't want hosed
 FILE_STORE_PATH = File.join(File.dirname(__FILE__), '/../temp/', CACHE_DIR)
 ActionController::Base.page_cache_directory = FILE_STORE_PATH
 ActionController::Base.fragment_cache_store = :file_store, FILE_STORE_PATH
@@ -34,6 +34,10 @@ class PageCachingTestController < ActionController::Base
   def expire_custom_path
     expire_page("/index.html")
     head :ok
+  end
+  
+  def trailing_slash
+    render :text => "Sneak attack"
   end
 end
 
@@ -90,6 +94,25 @@ class PageCachingTest < Test::Unit::TestCase
 
     get :expire_custom_path
     assert !File.exist?("#{FILE_STORE_PATH}/index.html")
+  end
+  
+  def test_should_cache_without_trailing_slash_on_url
+    @controller.class.cache_page 'cached content', '/page_caching_test/trailing_slash'
+    assert File.exist?("#{FILE_STORE_PATH}/page_caching_test/trailing_slash.html")
+  end
+
+  def test_should_cache_with_trailing_slash_on_url
+    @controller.class.cache_page 'cached content', '/page_caching_test/trailing_slash/'
+    assert File.exist?("#{FILE_STORE_PATH}/page_caching_test/trailing_slash.html")
+  end
+
+  uses_mocha("should_cache_ok_at_custom_path") do
+    def test_should_cache_ok_at_custom_path
+      @request.expects(:path).returns("/index.html")
+      get :ok
+      assert_response :ok
+      assert File.exist?("#{FILE_STORE_PATH}/index.html")
+    end
   end
 
   [:ok, :no_content, :found, :not_found].each do |status|
@@ -239,15 +262,21 @@ class ActionCacheTest < Test::Unit::TestCase
     @request.host = 'jamis.hostname.com'
     get :index
     jamis_cache = content_to_cache
-
+    
+    reset!
+    
     @request.host = 'david.hostname.com'
     get :index
     david_cache = content_to_cache
     assert_not_equal jamis_cache, @response.body
 
+    reset!
+
     @request.host = 'jamis.hostname.com'
     get :index
     assert_equal jamis_cache, @response.body
+
+    reset!
 
     @request.host = 'david.hostname.com'
     get :index

@@ -28,7 +28,15 @@ class FinderTest < Test::Unit::TestCase
     assert Topic.exists?(:author_name => "Mary", :approved => true)
     assert Topic.exists?(["parent_id = ?", 1])
     assert !Topic.exists?(45)
-    assert !Topic.exists?("foo")
+
+    begin
+      assert !Topic.exists?("foo")
+    rescue ActiveRecord::StatementInvalid
+      # PostgreSQL complains about string comparison with integer field
+    rescue Exception
+      flunk
+    end
+
     assert_raise(NoMethodError) { Topic.exists?([1,2]) }
   end
 
@@ -158,6 +166,11 @@ class FinderTest < Test::Unit::TestCase
   def test_find_on_hash_conditions
     assert Topic.find(1, :conditions => { :approved => false })
     assert_raises(ActiveRecord::RecordNotFound) { Topic.find(1, :conditions => { :approved => true }) }
+  end
+
+  def test_find_on_hash_conditions_with_explicit_table_name
+    assert Topic.find(1, :conditions => { 'topics.approved' => false })
+    assert_raises(ActiveRecord::RecordNotFound) { Topic.find(1, :conditions => { 'topics.approved' => true }) }
   end
 
   def test_find_on_association_proxy_conditions
@@ -324,6 +337,21 @@ class FinderTest < Test::Unit::TestCase
     assert_equal topics(:first), Topic.find_by_title("The First Topic")
     assert_nil Topic.find_by_title("The First Topic!")
   end
+  
+  def test_find_by_one_attribute_caches_dynamic_finder
+    # ensure this test can run independently of order
+    class << Topic; self; end.send(:remove_method, :find_by_title) if Topic.respond_to?(:find_by_title)
+    assert !Topic.respond_to?(:find_by_title)
+    t = Topic.find_by_title("The First Topic")
+    assert Topic.respond_to?(:find_by_title)
+  end
+
+  def test_dynamic_finder_returns_same_results_after_caching
+    # ensure this test can run independently of order
+    class << Topic; self; end.send(:remove_method, :find_by_title) if Topic.respond_to?(:find_by_title)
+    t = Topic.find_by_title("The First Topic")
+    assert_equal t, Topic.find_by_title("The First Topic") # find_by_title has been cached
+  end
 
   def test_find_by_one_attribute_with_order_option
     assert_equal accounts(:signals37), Account.find_by_credit_limit(50, :order => 'id')
@@ -332,6 +360,21 @@ class FinderTest < Test::Unit::TestCase
 
   def test_find_by_one_attribute_with_conditions
     assert_equal accounts(:rails_core_account), Account.find_by_credit_limit(50, :conditions => ['firm_id = ?', 6])
+  end
+
+  def test_dynamic_finder_on_one_attribute_with_conditions_caches_method
+    # ensure this test can run independently of order
+    class << Account; self; end.send(:remove_method, :find_by_credit_limit) if Account.respond_to?(:find_by_credit_limit)
+    assert !Account.respond_to?(:find_by_credit_limit)
+    a = Account.find_by_credit_limit(50, :conditions => ['firm_id = ?', 6])
+    assert Account.respond_to?(:find_by_credit_limit)
+  end
+
+  def test_dynamic_finder_on_one_attribute_with_conditions_returns_same_results_after_caching
+    # ensure this test can run independently of order
+    class << Account; self; end.send(:remove_method, :find_by_credit_limit) if Account.respond_to?(:find_by_credit_limit)
+    a = Account.find_by_credit_limit(50, :conditions => ['firm_id = ?', 6])
+    assert_equal a, Account.find_by_credit_limit(50, :conditions => ['firm_id = ?', 6]) # find_by_credit_limit has been cached
   end
 
   def test_find_by_one_attribute_with_several_options
@@ -439,6 +482,29 @@ class FinderTest < Test::Unit::TestCase
     assert_equal "38signals", sig38.name
     assert sig38.new_record?
   end
+  
+  def test_find_or_initialize_from_one_attribute_should_set_attribute_even_when_protected
+    c = Company.find_or_initialize_by_name_and_rating("Fortune 1000", 1000)
+    assert_equal "Fortune 1000", c.name
+    assert_equal 1000, c.rating
+    assert c.valid?
+    assert c.new_record?    
+  end
+
+  def test_find_or_create_from_one_attribute_should_set_attribute_even_when_protected
+    c = Company.find_or_create_by_name_and_rating("Fortune 1000", 1000)
+    assert_equal "Fortune 1000", c.name
+    assert_equal 1000, c.rating
+    assert c.valid?
+    assert !c.new_record?    
+  end
+
+  def test_dynamic_find_or_initialize_from_one_attribute_caches_method
+    class << Company; self; end.send(:remove_method, :find_or_initialize_by_name) if Company.respond_to?(:find_or_initialize_by_name)    
+    assert !Company.respond_to?(:find_or_initialize_by_name)
+    sig38 = Company.find_or_initialize_by_name("38signals")
+    assert Company.respond_to?(:find_or_initialize_by_name)
+  end
 
   def test_find_or_initialize_from_two_attributes
     another = Topic.find_or_initialize_by_title_and_author_name("Another topic","John")
@@ -462,6 +528,10 @@ class FinderTest < Test::Unit::TestCase
   def test_find_with_invalid_params
     assert_raises(ArgumentError) { Topic.find :first, :join => "It should be `joins'" }
     assert_raises(ArgumentError) { Topic.find :first, :conditions => '1 = 1', :join => "It should be `joins'" }
+  end
+
+  def test_dynamic_finder_with_invalid_params
+    assert_raises(ArgumentError) { Topic.find_by_title 'No Title', :join => "It should be `joins'" }
   end
 
   def test_find_all_with_limit
@@ -557,6 +627,16 @@ class FinderTest < Test::Unit::TestCase
   def test_select_values
     assert_equal ["1","2","3","4","5","6","7","8","9"], Company.connection.select_values("SELECT id FROM companies ORDER BY id").map! { |i| i.to_s }
     assert_equal ["37signals","Summit","Microsoft", "Flamboyant Software", "Ex Nihilo", "RailsCore", "Leetsoft", "Jadedpixel", "Odegy"], Company.connection.select_values("SELECT name FROM companies ORDER BY id")
+  end
+
+  def test_select_rows
+    assert_equal(
+      [["1", nil, nil, "37signals"],
+       ["2", "1", "2", "Summit"],
+       ["3", "1", "1", "Microsoft"]],
+      Company.connection.select_rows("SELECT id, firm_id, client_of, name FROM companies WHERE id IN (1,2,3) ORDER BY id").map! {|i| i.map! {|j| j.to_s unless j.nil?}})
+    assert_equal [["1", "37signals"], ["2", "Summit"], ["3", "Microsoft"]],
+      Company.connection.select_rows("SELECT id, name FROM companies WHERE id IN (1,2,3) ORDER BY id").map! {|i| i.map! {|j| j.to_s unless j.nil?}}
   end
 
   protected

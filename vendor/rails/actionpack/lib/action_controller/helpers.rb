@@ -1,3 +1,4 @@
+# FIXME: helper { ... } is broken on Ruby 1.9
 module ActionController #:nodoc:
   module Helpers #:nodoc:
     HELPERS_DIR = (defined?(RAILS_ROOT) ? "#{RAILS_ROOT}/app/helpers" : "app/helpers")
@@ -68,7 +69,7 @@ module ActionController #:nodoc:
       # See ActionView::Helpers (link:classes/ActionView/Helpers.html) for more about making your own helper modules
       # available to the templates.
       def add_template_helper(helper_module) #:nodoc:
-        master_helper_module.send(:include, helper_module)
+        master_helper_module.module_eval { include helper_module }
       end
 
       # The +helper+ class method can take a series of helper module names, a block, or both.
@@ -87,8 +88,8 @@ module ActionController #:nodoc:
       # When the argument is a +Module+, it will be included directly in the template class.
       #   helper FooHelper # => includes FooHelper
       #
-      # When the argument is the symbol <tt>:all</tt>, the controller will includes all helpers from 
-      # <tt>app/views/helpers/**/*.rb</tt> under +RAILS_ROOT+.
+      # When the argument is the symbol <tt>:all</tt>, the controller will include all helpers from 
+      # <tt>app/helpers/**/*.rb</tt> under +RAILS_ROOT+.
       #   helper :all
       #
       # Additionally, the +helper+ class method can receive and evaluate a block, making the methods defined available 
@@ -102,7 +103,7 @@ module ActionController #:nodoc:
       #     end
       #   end
       # 
-      # Finally, all the above styles can be mixed together, and the +helper+ method can be invokved with a mix of
+      # Finally, all the above styles can be mixed together, and the +helper+ method can be invoked with a mix of
       # +symbols+, +strings+, +modules+ and blocks.
       #   helper(:three, BlindHelper) { def mice() 'mice' end }
       #
@@ -120,7 +121,7 @@ module ActionController #:nodoc:
               begin
                 require_dependency(file_name)
               rescue LoadError => load_error
-                requiree = / -- (.*?)(\.rb)?$/.match(load_error).to_a[1]
+                requiree = / -- (.*?)(\.rb)?$/.match(load_error.message).to_a[1]
                 if requiree == file_name
                   msg = "Missing helper file helpers/#{file_name}.rb"
                   raise LoadError.new(msg).copy_blame!(load_error)
@@ -169,16 +170,16 @@ module ActionController #:nodoc:
 
       private
         def default_helper_module!
-          module_name = name.sub(/Controller$|$/, 'Helper')
-          module_path = module_name.split('::').map { |m| m.underscore }.join('/')
-          require_dependency module_path
-          helper module_name.constantize
-        rescue LoadError => e
+          unless name.blank?
+            module_name = name.sub(/Controller$|$/, 'Helper')
+            module_path = module_name.split('::').map { |m| m.underscore }.join('/')
+            require_dependency module_path
+            helper module_name.constantize
+          end
+        rescue MissingSourceFile => e
           raise unless e.is_missing? module_path
-          logger.debug("#{name}: missing default helper path #{module_path}") if logger
         rescue NameError => e
           raise unless e.missing_name? module_name
-          logger.debug("#{name}: missing default helper module #{module_name}") if logger
         end
 
         def inherited_with_helper(child)
@@ -186,8 +187,8 @@ module ActionController #:nodoc:
 
           begin
             child.master_helper_module = Module.new
-            child.master_helper_module.send :include, master_helper_module
-            child.send :default_helper_module!
+            child.master_helper_module.send! :include, master_helper_module
+            child.send! :default_helper_module!
           rescue MissingSourceFile => e
             raise unless e.is_missing?("helpers/#{child.controller_path}_helper")
           end

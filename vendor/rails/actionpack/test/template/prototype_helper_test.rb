@@ -60,6 +60,15 @@ module BaseTest
   end
 
 protected
+  
+  def request_forgery_protection_token
+    nil
+  end
+  
+  def protect_against_forgery?
+    false
+  end
+  
   def create_generator
     block = Proc.new { |*args| yield *args if block_given? } 
     JavaScriptGenerator.new self, &block
@@ -78,14 +87,19 @@ class PrototypeHelperTest < Test::Unit::TestCase
   def test_link_to_remote
     assert_dom_equal %(<a class=\"fine\" href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true}); return false;\">Remote outauthor</a>),
       link_to_remote("Remote outauthor", { :url => { :action => "whatnot"  }}, { :class => "fine"  })
-    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onComplete:function(request){alert(request.reponseText)}}); return false;\">Remote outauthor</a>),
-      link_to_remote("Remote outauthor", :complete => "alert(request.reponseText)", :url => { :action => "whatnot"  })      
-    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onSuccess:function(request){alert(request.reponseText)}}); return false;\">Remote outauthor</a>),
-      link_to_remote("Remote outauthor", :success => "alert(request.reponseText)", :url => { :action => "whatnot"  })
-    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onFailure:function(request){alert(request.reponseText)}}); return false;\">Remote outauthor</a>),
-      link_to_remote("Remote outauthor", :failure => "alert(request.reponseText)", :url => { :action => "whatnot"  })
-    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot?a=10&amp;b=20', {asynchronous:true, evalScripts:true, onFailure:function(request){alert(request.reponseText)}}); return false;\">Remote outauthor</a>),
-      link_to_remote("Remote outauthor", :failure => "alert(request.reponseText)", :url => { :action => "whatnot", :a => '10', :b => '20' })
+    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onComplete:function(request){alert(request.responseText)}}); return false;\">Remote outauthor</a>),
+      link_to_remote("Remote outauthor", :complete => "alert(request.responseText)", :url => { :action => "whatnot"  })      
+    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onSuccess:function(request){alert(request.responseText)}}); return false;\">Remote outauthor</a>),
+      link_to_remote("Remote outauthor", :success => "alert(request.responseText)", :url => { :action => "whatnot"  })
+    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true, onFailure:function(request){alert(request.responseText)}}); return false;\">Remote outauthor</a>),
+      link_to_remote("Remote outauthor", :failure => "alert(request.responseText)", :url => { :action => "whatnot"  })
+    assert_dom_equal %(<a href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot?a=10&amp;b=20', {asynchronous:true, evalScripts:true, onFailure:function(request){alert(request.responseText)}}); return false;\">Remote outauthor</a>),
+      link_to_remote("Remote outauthor", :failure => "alert(request.responseText)", :url => { :action => "whatnot", :a => '10', :b => '20' })
+  end
+  
+  def test_link_to_remote_html_options
+    assert_dom_equal %(<a class=\"fine\" href=\"#\" onclick=\"new Ajax.Request('http://www.example.com/whatnot', {asynchronous:true, evalScripts:true}); return false;\">Remote outauthor</a>),
+      link_to_remote("Remote outauthor", { :url => { :action => "whatnot"  }, :html => { :class => "fine" } })
   end
   
   def test_periodically_call_remote
@@ -289,23 +303,23 @@ class JavaScriptGeneratorTest < Test::Unit::TestCase
   end
   
   def test_insert_html_with_string
-    assert_equal 'new Insertion.Top("element", "\\074p\\076This is a test\\074/p\\076");',
+    assert_equal 'new Insertion.Top("element", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");',
       @generator.insert_html(:top, 'element', '<p>This is a test</p>')
-    assert_equal 'new Insertion.Bottom("element", "\\074p\076This is a test\\074/p\076");',
+    assert_equal 'new Insertion.Bottom("element", "\\u003Cp\u003EThis is a test\\u003C/p\u003E");',
       @generator.insert_html(:bottom, 'element', '<p>This is a test</p>')
-    assert_equal 'new Insertion.Before("element", "\\074p\076This is a test\\074/p\076");',
+    assert_equal 'new Insertion.Before("element", "\\u003Cp\u003EThis is a test\\u003C/p\u003E");',
       @generator.insert_html(:before, 'element', '<p>This is a test</p>')
-    assert_equal 'new Insertion.After("element", "\\074p\076This is a test\\074/p\076");',
+    assert_equal 'new Insertion.After("element", "\\u003Cp\u003EThis is a test\\u003C/p\u003E");',
       @generator.insert_html(:after, 'element', '<p>This is a test</p>')
   end
   
   def test_replace_html_with_string
-    assert_equal 'Element.update("element", "\\074p\\076This is a test\\074/p\\076");',
+    assert_equal 'Element.update("element", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");',
       @generator.replace_html('element', '<p>This is a test</p>')
   end
   
   def test_replace_element_with_string
-    assert_equal 'Element.replace("element", "\\074div id=\"element\"\\076\\074p\\076This is a test\\074/p\\076\\074/div\\076");',
+    assert_equal 'Element.replace("element", "\\u003Cdiv id=\"element\"\\u003E\\u003Cp\\u003EThis is a test\\u003C/p\\u003E\\u003C/div\\u003E");',
       @generator.replace('element', '<div id="element"><p>This is a test</p></div>')
   end
   
@@ -361,10 +375,10 @@ class JavaScriptGeneratorTest < Test::Unit::TestCase
     @generator.replace_html('baz', '<p>This is a test</p>')
     
     assert_equal <<-EOS.chomp, @generator.to_s
-new Insertion.Top("element", "\\074p\\076This is a test\\074/p\\076");
-new Insertion.Bottom("element", "\\074p\\076This is a test\\074/p\\076");
+new Insertion.Top("element", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");
+new Insertion.Bottom("element", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");
 ["foo", "bar"].each(Element.remove);
-Element.update("baz", "\\074p\\076This is a test\\074/p\\076");
+Element.update("baz", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");
     EOS
   end
 

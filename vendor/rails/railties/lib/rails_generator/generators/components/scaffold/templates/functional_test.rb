@@ -1,22 +1,10 @@
-require File.dirname(__FILE__) + '<%= '/..' * controller_class_nesting_depth %>/../test_helper'
-require '<%= controller_file_path %>_controller'
+require File.dirname(__FILE__) + '<%= '/..' * class_nesting_depth %>/../test_helper'
 
-# Re-raise errors caught by the controller.
-class <%= controller_class_name %>Controller; def rescue_action(e) raise e end; end
-
-class <%= controller_class_name %>ControllerTest < Test::Unit::TestCase
-  fixtures :<%= table_name %>
-
-  def setup
-    @controller = <%= controller_class_name %>Controller.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-  end
-
+class <%= controller_class_name %>ControllerTest < ActionController::TestCase
   def test_should_get_index
     get :index
     assert_response :success
-    assert assigns(:<%= table_name %>)
+    assert_not_nil assigns(:<%= table_name %>)
   end
 
   def test_should_get_new
@@ -33,23 +21,23 @@ class <%= controller_class_name %>ControllerTest < Test::Unit::TestCase
   end
 
   def test_should_show_<%= file_name %>
-    get :show, :id => 1
+    get :show, :id => <%= table_name %>(:one).id
     assert_response :success
   end
 
   def test_should_get_edit
-    get :edit, :id => 1
+    get :edit, :id => <%= table_name %>(:one).id
     assert_response :success
   end
 
   def test_should_update_<%= file_name %>
-    put :update, :id => 1, :<%= file_name %> => { }
+    put :update, :id => <%= table_name %>(:one).id, :<%= file_name %> => { }
     assert_redirected_to <%= file_name %>_path(assigns(:<%= file_name %>))
   end
 
   def test_should_destroy_<%= file_name %>
     assert_difference('<%= class_name %>.count', -1) do
-      delete :destroy, :id => 1
+      delete :destroy, :id => <%= table_name %>(:one).id
     end
 
     assert_redirected_to <%= table_name %>_path

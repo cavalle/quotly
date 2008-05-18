@@ -11,6 +11,8 @@ require 'fixtures/column_name'
 require 'fixtures/subscriber'
 require 'fixtures/keyboard'
 require 'fixtures/post'
+require 'fixtures/minimalistic'
+require 'rexml/document'
 
 class Category < ActiveRecord::Base; end
 class Smarts < ActiveRecord::Base; end
@@ -38,6 +40,11 @@ class LooseDescendant < LoosePerson
   attr_protected :phone_number
 end
 
+class LooseDescendantSecond< LoosePerson
+  attr_protected :phone_number
+  attr_protected :name
+end
+
 class TightPerson < ActiveRecord::Base
   self.table_name = 'people'
   attr_accessible :name, :address
@@ -45,6 +52,10 @@ end
 
 class TightDescendant < TightPerson
   attr_accessible :phone_number
+end
+
+class ReadonlyTitlePost < Post
+  attr_readonly :title
 end
 
 class Booleantest < ActiveRecord::Base; end
@@ -60,7 +71,7 @@ class TopicWithProtectedContentAndAccessibleAuthorName < ActiveRecord::Base
 end
 
 class BasicsTest < Test::Unit::TestCase
-  fixtures :topics, :companies, :developers, :projects, :computers, :accounts
+  fixtures :topics, :companies, :developers, :projects, :computers, :accounts, :minimalistics
 
   def test_table_exists
     assert !NonExistentTable.table_exists?
@@ -180,6 +191,15 @@ class BasicsTest < Test::Unit::TestCase
     assert_nil topic.title
   end
 
+  def test_save_for_record_with_only_primary_key
+    minimalistic = Minimalistic.new
+    assert_nothing_raised { minimalistic.save }
+  end
+
+  def test_save_for_record_with_only_primary_key_that_is_provided
+    assert_nothing_raised { Minimalistic.create!(:id => 2) }
+  end
+
   def test_hashes_not_mangled
     new_topic = { :title => "New Topic" }
     new_topic_values = { :title => "AnotherTopic" }
@@ -235,6 +255,11 @@ class BasicsTest < Test::Unit::TestCase
     topicReloaded.title = "A New Topic"
     topicReloaded.send :write_attribute, 'does_not_exist', 'test'
     assert_nothing_raised { topicReloaded.save }
+  end
+
+  def test_update_for_record_with_only_primary_key
+    minimalistic = minimalistics(:first)
+    assert_nothing_raised { minimalistic.save }
   end
   
   def test_write_attribute
@@ -394,6 +419,13 @@ class BasicsTest < Test::Unit::TestCase
       assert_equal 9900, Topic.find(2).written_on.usec
     end
   end
+  
+  def test_custom_mutator
+    topic = Topic.find(1)
+    # This mutator is protected in the class definition
+    topic.send(:approved=, true)
+    assert topic.instance_variable_get("@custom_approved")
+  end
 
   def test_destroy
     topic = Topic.find(1)
@@ -536,29 +568,26 @@ class BasicsTest < Test::Unit::TestCase
     assert_equal -2, Topic.find(2).replies_count
   end
 
-  # The ADO library doesn't support the number of affected rows
-  unless current_adapter?(:SQLServerAdapter)
-    def test_update_all
-      assert_equal 2, Topic.update_all("content = 'bulk updated!'")
-      assert_equal "bulk updated!", Topic.find(1).content
-      assert_equal "bulk updated!", Topic.find(2).content
+  def test_update_all
+    assert_equal 2, Topic.update_all("content = 'bulk updated!'")
+    assert_equal "bulk updated!", Topic.find(1).content
+    assert_equal "bulk updated!", Topic.find(2).content
 
-      assert_equal 2, Topic.update_all(['content = ?', 'bulk updated again!'])
-      assert_equal "bulk updated again!", Topic.find(1).content
-      assert_equal "bulk updated again!", Topic.find(2).content
+    assert_equal 2, Topic.update_all(['content = ?', 'bulk updated again!'])
+    assert_equal "bulk updated again!", Topic.find(1).content
+    assert_equal "bulk updated again!", Topic.find(2).content
 
-      assert_equal 2, Topic.update_all(['content = ?', nil])
-      assert_nil Topic.find(1).content
-    end
+    assert_equal 2, Topic.update_all(['content = ?', nil])
+    assert_nil Topic.find(1).content
+  end
 
-    def test_update_all_with_hash
-      assert_not_nil Topic.find(1).last_read
-      assert_equal 2, Topic.update_all(:content => 'bulk updated with hash!', :last_read => nil)
-      assert_equal "bulk updated with hash!", Topic.find(1).content
-      assert_equal "bulk updated with hash!", Topic.find(2).content
-      assert_nil Topic.find(1).last_read
-      assert_nil Topic.find(2).last_read
-    end
+  def test_update_all_with_hash
+    assert_not_nil Topic.find(1).last_read
+    assert_equal 2, Topic.update_all(:content => 'bulk updated with hash!', :last_read => nil)
+    assert_equal "bulk updated with hash!", Topic.find(1).content
+    assert_equal "bulk updated with hash!", Topic.find(2).content
+    assert_nil Topic.find(1).last_read
+    assert_nil Topic.find(2).last_read
   end
 
   if current_adapter?(:MysqlAdapter)
@@ -577,9 +606,6 @@ class BasicsTest < Test::Unit::TestCase
   end
 
   def test_delete_all
-    # The ADO library doesn't support the number of affected rows
-    return true if current_adapter?(:SQLServerAdapter)
-
     assert_equal 2, Topic.delete_all
   end
 
@@ -793,7 +819,7 @@ class BasicsTest < Test::Unit::TestCase
     assert_nil keyboard.id
   end
 
-  def test_customized_primary_key_remains_protected_when_refered_to_as_id
+  def test_customized_primary_key_remains_protected_when_referred_to_as_id
     subscriber = Subscriber.new(:id => 'webster123', :name => 'nice try')
     assert_nil subscriber.id
 
@@ -822,16 +848,32 @@ class BasicsTest < Test::Unit::TestCase
   
   def test_mass_assignment_protection_inheritance
     assert_nil LoosePerson.accessible_attributes
-    assert_equal [ :credit_rating, :administrator ], LoosePerson.protected_attributes
+    assert_equal Set.new([ 'credit_rating', 'administrator' ]), LoosePerson.protected_attributes
 
     assert_nil LooseDescendant.accessible_attributes
-    assert_equal [ :credit_rating, :administrator, :phone_number  ], LooseDescendant.protected_attributes
+    assert_equal Set.new([ 'credit_rating', 'administrator', 'phone_number' ]), LooseDescendant.protected_attributes
+
+    assert_nil LooseDescendantSecond.accessible_attributes
+    assert_equal Set.new([ 'credit_rating', 'administrator', 'phone_number', 'name' ]), LooseDescendantSecond.protected_attributes, 'Running attr_protected twice in one class should merge the protections'
 
     assert_nil TightPerson.protected_attributes
-    assert_equal [ :name, :address ], TightPerson.accessible_attributes
+    assert_equal Set.new([ 'name', 'address' ]), TightPerson.accessible_attributes
 
     assert_nil TightDescendant.protected_attributes
-    assert_equal [ :name, :address, :phone_number  ], TightDescendant.accessible_attributes
+    assert_equal Set.new([ 'name', 'address', 'phone_number' ]), TightDescendant.accessible_attributes
+  end
+  
+  def test_readonly_attributes
+    assert_equal Set.new([ 'title' ]), ReadonlyTitlePost.readonly_attributes
+    
+    post = ReadonlyTitlePost.create(:title => "cannot change this", :body => "changeable")
+    post.reload
+    assert_equal "cannot change this", post.title
+    
+    post.update_attributes(:title => "try to change", :body => "changed")
+    post.reload
+    assert_equal "cannot change this", post.title
+    assert_equal "changed", post.body
   end
 
   def test_multiparameter_attributes_on_date
@@ -951,6 +993,10 @@ class BasicsTest < Test::Unit::TestCase
     cloned_topic.title["a"] = "c" 
     assert_equal "b", topic.title["a"]
 
+    #test if attributes set as part of after_initialize are cloned correctly
+    assert_equal topic.author_email_address, cloned_topic.author_email_address
+
+    # test if saved clone object differs from original
     cloned_topic.save
     assert !cloned_topic.new_record?
     assert cloned_topic.id != topic.id
@@ -1215,12 +1261,12 @@ class BasicsTest < Test::Unit::TestCase
   end
 
   def test_increment_attribute
-    assert_equal 1, topics(:first).replies_count
-    topics(:first).increment! :replies_count
-    assert_equal 2, topics(:first, :reload).replies_count
-    
-    topics(:first).increment(:replies_count).increment!(:replies_count)
-    assert_equal 4, topics(:first, :reload).replies_count
+    assert_equal 50, accounts(:signals37).credit_limit
+    accounts(:signals37).increment! :credit_limit
+    assert_equal 51, accounts(:signals37, :reload).credit_limit    
+
+    accounts(:signals37).increment(:credit_limit).increment!(:credit_limit)
+    assert_equal 53, accounts(:signals37, :reload).credit_limit
   end
   
   def test_increment_nil_attribute
@@ -1230,14 +1276,13 @@ class BasicsTest < Test::Unit::TestCase
   end
   
   def test_decrement_attribute
-    topics(:first).increment(:replies_count).increment!(:replies_count)
-    assert_equal 3, topics(:first).replies_count
-    
-    topics(:first).decrement!(:replies_count)
-    assert_equal 2, topics(:first, :reload).replies_count
+    assert_equal 50, accounts(:signals37).credit_limit
 
-    topics(:first).decrement(:replies_count).decrement!(:replies_count)
-    assert_equal 0, topics(:first, :reload).replies_count
+    accounts(:signals37).decrement!(:credit_limit)
+    assert_equal 49, accounts(:signals37, :reload).credit_limit
+  
+    accounts(:signals37).decrement(:credit_limit).decrement!(:credit_limit)
+    assert_equal 47, accounts(:signals37, :reload).credit_limit
   end
   
   def test_toggle_attribute
@@ -1507,28 +1552,48 @@ class BasicsTest < Test::Unit::TestCase
   end
 
   def test_to_xml
-    xml = topics(:first).to_xml(:indent => 0, :skip_instruct => true)
+    xml = REXML::Document.new(topics(:first).to_xml(:indent => 0))
     bonus_time_in_current_timezone = topics(:first).bonus_time.xmlschema
     written_on_in_current_timezone = topics(:first).written_on.xmlschema
     last_read_in_current_timezone = topics(:first).last_read.xmlschema
-    assert_equal "<topic>", xml.first(7)
-    assert xml.include?(%(<title>The First Topic</title>))
-    assert xml.include?(%(<author-name>David</author-name>))
-    assert xml.include?(%(<id type="integer">1</id>))
-    assert xml.include?(%(<replies-count type="integer">1</replies-count>))
-    assert xml.include?(%(<written-on type="datetime">#{written_on_in_current_timezone}</written-on>))
-    assert xml.include?(%(<content type="yaml">--- Have a nice day\n</content>))
-    assert xml.include?(%(<author-email-address>david@loudthinking.com</author-email-address>))
-    assert xml.match(%(<parent-id type="integer"></parent-id>))
+
+    assert_equal "topic", xml.root.name
+    assert_equal "The First Topic" , xml.elements["//title"].text
+    assert_equal "David" , xml.elements["//author-name"].text
+
+    assert_equal "1", xml.elements["//id"].text
+    assert_equal "integer" , xml.elements["//id"].attributes['type']
+
+    assert_equal "1", xml.elements["//replies-count"].text
+    assert_equal "integer" , xml.elements["//replies-count"].attributes['type']
+
+    assert_equal written_on_in_current_timezone, xml.elements["//written-on"].text
+    assert_equal "datetime" , xml.elements["//written-on"].attributes['type']
+
+    assert_equal "--- Have a nice day\n" , xml.elements["//content"].text
+    assert_equal "yaml" , xml.elements["//content"].attributes['type']
+
+    assert_equal "david@loudthinking.com", xml.elements["//author-email-address"].text
+
+    assert_equal nil, xml.elements["//parent-id"].text
+    assert_equal "integer", xml.elements["//parent-id"].attributes['type']
+    assert_equal "true", xml.elements["//parent-id"].attributes['nil']
+
     if current_adapter?(:SybaseAdapter, :SQLServerAdapter, :OracleAdapter)
-      assert xml.include?(%(<last-read type="datetime">#{last_read_in_current_timezone}</last-read>))
+      assert_equal last_read_in_current_timezone, xml.elements["//last-read"].text
+      assert_equal "datetime" , xml.elements["//last-read"].attributes['type']
     else
-      assert xml.include?(%(<last-read type="date">2004-04-15</last-read>))
+      assert_equal "2004-04-15", xml.elements["//last-read"].text
+      assert_equal "date" , xml.elements["//last-read"].attributes['type']
     end
+
     # Oracle and DB2 don't have true boolean or time-only fields
     unless current_adapter?(:OracleAdapter, :DB2Adapter)
-      assert xml.include?(%(<approved type="boolean">false</approved>)), "Approved should be a boolean"
-      assert xml.include?(%(<bonus-time type="datetime">#{bonus_time_in_current_timezone}</bonus-time>))
+      assert_equal "false", xml.elements["//approved"].text
+      assert_equal "boolean" , xml.elements["//approved"].attributes['type']
+
+      assert_equal bonus_time_in_current_timezone, xml.elements["//bonus-time"].text
+      assert_equal "datetime" , xml.elements["//bonus-time"].attributes['type']
     end
   end
 
@@ -1667,9 +1732,14 @@ class BasicsTest < Test::Unit::TestCase
 
   def test_attribute_for_inspect
     t = topics(:first)
-    t.content = %(This is some really long content, longer than 50 characters, so I can test that text is truncated correctly by the new ActiveRecord::Base#inspect method! Yay! BOOM!)
+    t.title = "The First Topic Now Has A Title With\nNewlines And More Than 50 Characters"
 
     assert_equal %("#{t.written_on.to_s(:db)}"), t.attribute_for_inspect(:written_on)
-    assert_equal '"This is some really long content, longer than 50 ch..."', t.attribute_for_inspect(:content)
+    assert_equal '"The First Topic Now Has A Title With\nNewlines And M..."', t.attribute_for_inspect(:title)
+  end
+  
+  def test_becomes
+    assert_kind_of Reply, topics(:first).becomes(Reply)
+    assert_equal "The First Topic", topics(:first).becomes(Reply).title
   end
 end

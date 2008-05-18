@@ -9,10 +9,12 @@ require 'fixtures/category'
 require 'fixtures/categorization'
 require 'fixtures/vertex'
 require 'fixtures/edge'
+require 'fixtures/book'
+require 'fixtures/citation'
 
 class AssociationsJoinModelTest < Test::Unit::TestCase
   self.use_transactional_fixtures = false
-  fixtures :posts, :authors, :categories, :categorizations, :comments, :tags, :taggings, :author_favorites, :vertices, :items
+  fixtures :posts, :authors, :categories, :categorizations, :comments, :tags, :taggings, :author_favorites, :vertices, :items, :books
 
   def test_has_many
     assert authors(:david).categories.include?(categories(:general))
@@ -282,10 +284,10 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
     assert_equal categories(:general), authors(:david).categories.find(:first, :conditions => "categories.name = 'General'")
     assert_equal nil, authors(:david).categories.find(:first, :conditions => "categories.name = 'Technology'")
   end
-  
+
   def test_has_many_class_methods_called_by_method_missing
     assert_equal categories(:general), authors(:david).categories.find_all_by_name('General').first
-#    assert_equal nil, authors(:david).categories.find_by_name('Technology')
+    assert_equal nil, authors(:david).categories.find_by_name('Technology')
   end
 
   def test_has_many_going_through_join_model_with_custom_foreign_key
@@ -408,6 +410,12 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
     authors(:david).author_favorites.create :favorite_author => new_author
     assert_equal new_author, authors(:david).reload.favorite_authors.first
   end
+  
+  def test_has_many_through_uses_conditions_specified_on_the_has_many_association
+    author = Author.find(:first)
+    assert !author.comments.blank?
+    assert author.nonexistant_comments.blank?
+  end
 
   def test_has_many_through_uses_correct_attributes
     assert_nil posts(:thinking).tags.find_by_name("General").attributes["tag_id"]
@@ -417,6 +425,7 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
     assert_raise(ActiveRecord::HasManyThroughCantAssociateNewRecords) { posts(:thinking).tags << tags(:general).clone }
     assert_raise(ActiveRecord::HasManyThroughCantAssociateNewRecords) { posts(:thinking).clone.tags << tags(:general) }
     assert_raise(ActiveRecord::HasManyThroughCantAssociateNewRecords) { posts(:thinking).tags.build }
+    assert_raise(ActiveRecord::HasManyThroughCantAssociateNewRecords) { posts(:thinking).tags.new }
   end
 
   def test_create_associate_when_adding_to_has_many_through
@@ -457,6 +466,15 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
     assert !author.comments.loaded?
   end
 
+  uses_mocha('has_many_through_collection_size_uses_counter_cache_if_it_exists') do
+    def test_has_many_through_collection_size_uses_counter_cache_if_it_exists
+      author = authors(:david)
+      author.stubs(:read_attribute).with('comments_count').returns(100)
+      assert_equal 100, author.comments.size
+      assert !author.comments.loaded?
+    end
+  end
+
   def test_adding_junk_to_has_many_through_should_raise_type_mismatch
     assert_raise(ActiveRecord::AssociationTypeMismatch) { posts(:thinking).tags << "Uhh what now?" }
   end
@@ -464,6 +482,20 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
   def test_adding_to_has_many_through_should_return_self
     tags = posts(:thinking).tags
     assert_equal tags, posts(:thinking).tags.push(tags(:general))
+  end
+
+  def test_delete_associate_when_deleting_from_has_many_through_with_nonstandard_id
+    count = books(:awdr).references.count
+    references_before = books(:awdr).references
+    book = Book.create!(:name => 'Getting Real')
+    book_awdr = books(:awdr)
+    book_awdr.references << book
+    assert_equal(count + 1, book_awdr.references(true).size)
+
+    assert_nothing_raised { book_awdr.references.delete(book) }
+    assert_equal(count, book_awdr.references.size)
+    assert_equal(count, book_awdr.references(true).size)
+    assert_equal(references_before.sort, book_awdr.references.sort)
   end
 
   def test_delete_associate_when_deleting_from_has_many_through
@@ -506,6 +538,12 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
 
   def test_has_many_through_has_many_with_sti
     assert_equal [comments(:does_it_hurt)], authors(:david).special_post_comments
+  end
+  
+  def test_uniq_has_many_through_should_retain_order
+    comment_ids = authors(:david).comments.map(&:id)
+    assert_equal comment_ids.sort, authors(:david).ordered_uniq_comments.map(&:id)
+    assert_equal comment_ids.sort.reverse, authors(:david).ordered_uniq_comments_desc.map(&:id)
   end
 
   private

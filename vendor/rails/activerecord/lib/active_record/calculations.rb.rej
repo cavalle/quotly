@@ -1,0 +1,34 @@
+***************
+*** 104,109 ****
+        # * <tt>:group</tt>: An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
+        # * <tt>:select</tt>: By default, this is * as in SELECT * FROM, but can be changed if you for example want to do a join, but not
+        #   include the joined columns.
+        # * <tt>:distinct</tt>: Set this to true to make this a distinct calculation, such as SELECT COUNT(DISTINCT posts.id) ...
+        #
+        # Examples:
+--- 106,113 ----
+        # * <tt>:group</tt>: An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
+        # * <tt>:select</tt>: By default, this is * as in SELECT * FROM, but can be changed if you for example want to do a join, but not
+        #   include the joined columns.
++       # * <tt>:from</tt>: By default, this is the table name of the class, but can be changed to an alternate table name (or even the name
++       #   of a database view).
+        # * <tt>:distinct</tt>: Set this to true to make this a distinct calculation, such as SELECT COUNT(DISTINCT posts.id) ...
+        #
+        # Examples:
+***************
+*** 180,186 ****
+            
+            sql << ", #{options[:group_field]} AS #{options[:group_alias]}" if options[:group]
+            sql << " FROM (SELECT DISTINCT #{column_name}" if use_workaround
+-           sql << " FROM #{table_name} "
+            if merged_includes.any?
+              join_dependency = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, merged_includes, options[:joins])
+              sql << join_dependency.join_associations.collect{|join| join.association_join }.join
+--- 184,190 ----
+            
+            sql << ", #{options[:group_field]} AS #{options[:group_alias]}" if options[:group]
+            sql << " FROM (SELECT DISTINCT #{column_name}" if use_workaround
++           sql << " FROM #{options[:from] || table_name} "
+            if merged_includes.any?
+              join_dependency = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, merged_includes, options[:joins])
+              sql << join_dependency.join_associations.collect{|join| join.association_join }.join
