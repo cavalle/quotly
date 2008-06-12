@@ -1,0 +1,20 @@
+Story: User registration
+  As a visitor
+  I want to register in q.uot.es
+  So that I can manage my collections of quotations in a social fashion
+  
+  Scenario: A visitor succesfully register in q.uot.es
+    Given no user with 'juan@juan.com' email exists
+    And no user with 'juan' login exists
+    
+    When visitor goes to the home page
+    And clicks on 'Register'
+    Then the registration form should be shown
+    
+    When fills in Login with 'juan'
+    And fills in Email with 'juan@juan.com'
+    And fills in Password with 'password'
+    And fills in Confirm Password with 'password'
+    Then an user with 'juan' login and 'juan@juan.com' email should exist
+    And page should include a notice 'You have been registered in q.uot.es!'
+    And an email should have been sent to the user with a subject that includes 'You've been registered' and body that includes username and password
