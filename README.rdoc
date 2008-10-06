@@ -2,6 +2,6 @@
 
 Quotes is a web application that allow users to manage their own collections of quotations in a social fashion. The application is online at http://q.uot.es
 
-It's written with <b>beautiful code</b> in Rails and it serves as a <b>demo application</b> and a *sandbox* for the author.
+It's written in <b>beautiful code</b> using Rails and it serves as a <b>demo application</b> and a *sandbox* for the author.
 
 Copyright (c) 2008 Luis Miguel Cavallé San Miguel
