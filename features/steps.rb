@@ -2,7 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../quotes')
 require 'webrat'
 require 'webrat/mechanize'
 require 'spec'
-require "webrat/core/matchers"
+require 'webrat/core/matchers'
+require 'sinatra/test/unit'
 
 World do
   include Webrat::Methods
@@ -22,8 +23,8 @@ Before do
   end
 end
 
-Given /^the following quotes has been created:$/ do |table|
-  Quote.create!(table.hashes)
+Given /^the following (.+) has been created:$/ do |resource, table|
+  resource.singularize.capitalize.constantize.create! table.hashes
 end
 
 When /^I visit the home page of q\.uot\.es$/ do

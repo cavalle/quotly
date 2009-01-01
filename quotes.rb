@@ -1,4 +1,4 @@
-load(File.expand_path(File.dirname(__FILE__) + '/lib/framework.rb'))
+require 'lib/framework'
 
 resource :quote do
   fields do |f|

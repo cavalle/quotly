@@ -1,3 +1,6 @@
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
 require 'rubygems'
 require 'activerecord'
 require 'sinatra'
@@ -6,8 +9,8 @@ database_config = YAML::load(File.open('database.yml'))
 ActiveRecord::Base.establish_connection(database_config)
 
 # auto-migrations
-require File.expand_path(File.dirname(__FILE__) + '/vendor/auto_migrations/lib/auto_migrations')
-ActiveRecord::Migration.send :include, AutoMigrations
+$:.unshift(File.dirname(__FILE__) + '/vendor/auto_migrations/lib')
+require 'vendor/auto_migrations/init'
 
 class ActiveRecord::Base
   def self.fields(&block)
@@ -15,25 +18,36 @@ class ActiveRecord::Base
   end
 end
 
-def resource(name, &block)
-  resource = Object.const_set(name.to_s.capitalize, Class.new(ActiveRecord::Base))
-  resource.class_eval(&block)
+module Mojito
   
-  get "/#{name.to_s.pluralize}" do
-    instance_variable_set "@#{name.to_s.pluralize}", resource.all
-    erb :"#{resource.table_name}/index.html"
+  module DSL
+    
+    def resource(name, &block)
+      resource = Object.const_set(name.to_s.capitalize, Class.new(ActiveRecord::Base))
+      resource.class_eval(&block)
+  
+      get "/#{name.to_s.pluralize}" do
+        instance_variable_set "@#{name.to_s.pluralize}", resource.all
+        erb :"#{resource.table_name}/index.html"
+      end
+  
+      get "/" do
+        instance_variable_set "@#{name.to_s.pluralize}", resource.all
+        erb :"#{resource.table_name}/index.html"
+      end if Mojito.resources.empty?
+  
+      Mojito.resources << resource
+      
+    end
+  
   end
-  
-  get "/" do
-    instance_variable_set "@#{name.to_s.pluralize}", resource.all
-    erb :"#{resource.table_name}/index.html"
-  end if resources.empty?
-  
-  resources << resource
-  
+
+  def self.resources
+    @@resources ||= []
+  end
+
 end
 
-@resources = []
-def resources
-  @resources
-end
+Sinatra.application.clearables << Mojito.resources
+
+include Mojito::DSL
