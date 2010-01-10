@@ -4,3 +4,4 @@ vendor/gems/*
 capybara-*.html
 dump.rdb
 quotes.tmproj
+mkmf.log

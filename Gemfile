@@ -1,4 +1,6 @@
-gem "bundler"
+source "http://gemcutter.org"
+disable_rubygems
+
 gem "sinatra", :require_as => 'sinatra/base'
 gem "mustache", :require_as => 'mustache/sinatra'
 gem "redis"
@@ -12,5 +14,3 @@ only :test do
   gem "capybara", :require_as => %w{capybara capybara/dsl}
   gem "faker"
 end
-
-disable_rubygems
