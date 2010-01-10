@@ -1,0 +1,12 @@
+<h3>{{ nickname }}'s saved quotes</h3>
+<div class="quotes">
+{{# quotes }}
+  {{> quote }}
+{{/ quotes }}
+
+{{# no_quotes? }}
+  <div class="notice">
+    No quotes saved by {{ nickname }} yet
+  </div>
+{{/ no_quotes? }}
+</div>
