@@ -113,10 +113,7 @@ module Quotes
         end
       end
       
-      class UserShow < Mustache
-        def quotes
-          @quotes
-        end
+      class UserShow < QuoteIndex
         
         def nickname
           @user[:nickname]
