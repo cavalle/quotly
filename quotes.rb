@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + "/vendor/gems/environment.rb"
-
 Bundler.require_env
 
 module Quotes
@@ -19,6 +18,8 @@ module Quotes
     use Rack::OpenID
     
     set :views, File.dirname(__FILE__) + "/templates"
+    set :public, File.dirname(__FILE__) + "/public"
+    set :static, true
     
     before do
       @current_user = session[:user]
@@ -85,17 +86,30 @@ module Quotes
     end
     
     module Views
-      class QuoteIndex < Mustache
-        def quotes
-          @quotes
-        end
-        
+      class Layout < Mustache
         def logged_in?
           @current_user
         end
         
         def anonymous?
           @current_user.blank?
+        end
+      end
+      
+      class QuoteIndex < Mustache
+        def quotes
+          @quotes.map do |quote|
+            { :text => quote[:text],
+              :author => quote[:author],
+              :size => case quote[:text].length
+                       when (0..40): "extra-small"
+                       when (40..100): "small"
+                       when (100..250): "medium"
+                       when (250..500): "large"
+                       else "extra-large"
+                       end
+            }
+          end
         end
       end
       

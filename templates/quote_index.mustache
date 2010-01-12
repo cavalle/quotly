@@ -1,16 +1,6 @@
-<div class="quotes">
+<h2><span>Latest quotes</span></h2>
+<div class="quotes">  
 {{#quotes}}
   {{> quote }}
 {{/quotes}}
-</div>
-<div class="actions">
-  {{# logged_in? }}
-  <a href="/quotes/new">Add new quote</a>
-  <a href="/logout">Logout</a>
-  <a href="/{{ nickname }}">Your quotes</p>
-  {{/ logged_in? }}
-  
-  {{# anonymous? }}
-  <a href="/login">Login or Register</a>
-  {{/ anonymous? }}
 </div>

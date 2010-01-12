@@ -1,0 +1,170 @@
+/* mini-reset. Mamuso style */
+
+body {
+    font-family: Georgia, serif;
+    font-size: x-small;
+    font-variant: normal;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1.5em;
+    text-align: center;
+    background-image:url(/images/bg.gif);
+    color:#363940;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+a:focus { outline: none; }
+
+a {
+  color:inherit;
+}
+
+/* Layout */
+
+#main {
+  width: 80.0em;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#header {
+  padding:2.0em 0;
+}
+
+#header h1 {
+  float:left;
+  font-size:x-small;
+  padding:1.25em 2.50em;
+  background-color:white;
+}
+
+#header h1 a {
+  display:block;
+  width:23.9em;
+  height:8.1em;
+  background:white url(/images/logo.png) no-repeat scroll center center;
+}
+
+#header h1 a span{
+  display:none;
+}
+
+#header .nav {
+  float:right;
+  padding:1.0em 2.0em;
+  background-color:white;
+  font-size:1.5em;
+}
+
+#content {
+  clear:left;
+  padding-top:2.0em;
+}
+
+#content form#login {
+  background-color:white;
+  padding:2.50em;
+  width:50.0em;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#content form#login label {
+  font-size:1.5em;
+}
+
+#content h2 {
+  font-size:x-small;
+  background-color:white;
+  margin:0 0 2.5em 4.0em;
+  padding:0.8em 2.5em;
+  float:left;
+  background:white url(/images/latest-quotes.png) no-repeat scroll center center;
+  width:18.3em;
+  height:3.4em;
+}
+
+#content h2 span {
+  display:none;
+}
+
+#content .quotes {
+  clear:left;
+}
+
+#content .quote {
+  width:47.5em;
+  padding:2.5em 3em 2em;
+  background-color:white;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:3.5em;
+  position:relative;
+}
+
+#content .quote blockquote {
+  text-align:justify;
+  margin-bottom:1.0em;
+  line-height:1.66em;
+}
+
+#content .quote .author {
+  text-align:right;
+  line-height:1.66em;
+}
+
+#content .quote.extra-small { width:34.0em; }
+#content .quote.extra-small blockquote {
+  font-size:2.8em;
+  line-height:1.4em;
+  text-align:center;
+}
+#content .quote.extra-small .author { font-size:2.9em; }
+
+#content .quote.small { width:40.0em; }
+#content .quote.small blockquote {
+  font-size:2.5em;
+  
+  line-height:1.4em;
+  text-align:center;
+}
+#content .quote.small .author { font-size:2.6em; }
+
+#content .quote.medium blockquote { font-size:1.9em; }
+#content .quote.medium .author    { font-size:2.0em; }
+
+#content .quote.large blockquote { font-size:1.6em; }
+#content .quote.large .author    { font-size:1.7em; }
+
+#content .quote.extra-large blockquote { font-size:1.2em; }
+#content .quote.extra-large .author    { font-size:1.3em; }
+
+#content .quote:nth-child(5n+1) {
+  left:-6.0em;
+}
+
+#content .quote:nth-child(5n+2) {
+  left:3.0em;
+}
+
+#content .quote:nth-child(5n+3) {
+  left:-4em;
+}
+
+#content .quote:nth-child(5n+4) {
+  left:6.0em;
+}
+
+#content .quote:nth-child(5n+5) {
+  left:0em;
+}
+
+
+
+
+
+

@@ -3,8 +3,33 @@
   <head>
     <title>Quotes</title>
     <meta charset="utf-8"/>
+    <link rel="stylesheet" href="/stylesheets/screen.css" />
   </head>
   <body>
-    {{{yield}}}
+    <div id="main">
+      <div id="header">
+        <h1>
+          <a href="/"><span>quot.ly</span></a>
+        </h1>
+        <div class="nav">
+          {{# logged_in? }}
+          <a href="/quotes/new">Add new quote</a>
+          ~
+          <a href="/logout">Logout</a>
+          ~
+          <a href="/{{ nickname }}">Your quotes</a>
+          {{/ logged_in? }}
+
+          {{# anonymous? }}
+          <a href="/login">Login or Register</a>
+          {{/ anonymous? }}
+        </div>
+      </div>
+      <div id="content">
+        {{{yield}}}
+      </div>
+      <div id="footer">
+      </div>
+    </div>
   </body>
 </html>
