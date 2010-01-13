@@ -8,8 +8,8 @@ feature "Adding quotes" do
   end
   
   scenario "Logged in users can create quotes" do
-    create_user :identity_url => "jdoe.com", :nickname => "jdoe"
-    login_as "jdoe.com"
+    user = create_user :nickname => "jdoe"
+    login_as user
     
     visit "/"
     

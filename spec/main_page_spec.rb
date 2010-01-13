@@ -4,7 +4,7 @@ feature "Main page" do
   scenario "should load" do
     visit "/"
     
-    page.should have_content("Quotes")
+    page.should have_content("quot.ly")
     page.should_not have_css(".quote")
   end
   

@@ -1,0 +1,8 @@
+<form method="post" action="{{quote_path}}" id="edit_quote">
+  <input type="hidden" name="_method" value="PUT" />
+  <label for="text">Text</label>
+  <textarea id="text" name="text">{{text}}</textarea>
+  <label for="author">Author</label>
+  <input type="text" id="author" name="author" value="{{author}}"/>
+  <input type="submit" value="Amend quote"/>
+</form>

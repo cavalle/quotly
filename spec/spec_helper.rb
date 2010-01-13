@@ -19,9 +19,9 @@ module Factories
 end
 
 module Helpers
-  def login_as(identity_url)
+  def login_as(user)
     visit "/login"
-    fill_in "OpenID", :with => identity_url
+    fill_in "OpenID", :with => user[:identity_url]
     click_button "Login!"
   end
 end

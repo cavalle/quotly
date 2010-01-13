@@ -22,7 +22,7 @@ feature "User page" do
     
     visit "/jdoe"
     
-    page.should have_css("h3", :text => "jdoe's saved quotes")
+    page.should have_css("h2", :text => "jdoe's saved quotes")
     page.should have_css(".quote", :count => 1)
     within(:css, ".quote") do
       page.should have_css(".text", :text => "The language of friendship is not words, but meanings")
@@ -31,8 +31,8 @@ feature "User page" do
   end
   
   scenario "Current users' is linked from main page" do
-    user = create_user :nickname => "jdoe", :identity_url => "jdoe.com"
-    login_as "jdoe.com"
+    user = create_user :nickname => "jdoe"
+    login_as user
     visit "/"
     click_link "Your quotes"
     page.path.should == "/jdoe"

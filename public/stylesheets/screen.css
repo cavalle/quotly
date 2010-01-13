@@ -86,24 +86,16 @@ a {
 }
 
 #content h2 span {
-  font-size:2.2em;
+  font-weight:lighter;
+  font-size:3.5em;
+  color:#686F7E;
 }
 
-#content h2#latest_quotes {
-  background:white url(/images/latest-quotes.png) no-repeat scroll center center;
-  width:18.3em;
-  height:3.4em;
-}
-
-#content h2#latest_quotes span{
-  display:none;
-}
-
-#content .quotes {
+.quotes {
   clear:left;
 }
 
-#content .quote {
+.quote {
   width:47.5em;
   padding:2.5em 3em 2em;
   background-color:white;
@@ -113,61 +105,76 @@ a {
   position:relative;
 }
 
-#content .quote blockquote {
+.quote blockquote {
   text-align:justify;
   margin-bottom:1.0em;
   line-height:1.66em;
 }
 
-#content .quote .author {
+.quote .author {
   text-align:right;
   line-height:1.66em;
 }
 
-#content .quote.extra-small { width:34.0em; }
-#content .quote.extra-small blockquote {
+.quote.extra-small { width:34.0em; }
+.quote.extra-small blockquote {
   font-size:2.8em;
   line-height:1.4em;
   text-align:center;
 }
-#content .quote.extra-small .author { font-size:2.9em; }
+.quote.extra-small .author { font-size:2.9em; }
 
-#content .quote.small { width:40.0em; }
-#content .quote.small blockquote {
+.quote.small { width:40.0em; }
+.quote.small blockquote {
   font-size:2.5em;
   
   line-height:1.4em;
   text-align:center;
 }
-#content .quote.small .author { font-size:2.6em; }
+.quote.small .author { font-size:2.6em; }
 
-#content .quote.medium blockquote { font-size:1.9em; }
-#content .quote.medium .author    { font-size:2.0em; }
+.quote.medium blockquote { font-size:1.9em; }
+.quote.medium .author    { font-size:2.0em; }
 
-#content .quote.large blockquote { font-size:1.6em; }
-#content .quote.large .author    { font-size:1.7em; }
+.quote.large blockquote { font-size:1.6em; }
+.quote.large .author    { font-size:1.7em; }
 
-#content .quote.extra-large blockquote { font-size:1.2em; }
-#content .quote.extra-large .author    { font-size:1.3em; }
+.quote.extra-large blockquote { font-size:1.2em; }
+.quote.extra-large .author    { font-size:1.3em; }
 
-#content .quote:nth-child(5n+1) {
+.quote:nth-child(5n+1) {
   left:-6.0em;
 }
 
-#content .quote:nth-child(5n+2) {
+.quote:nth-child(5n+2) {
   left:3.0em;
 }
 
-#content .quote:nth-child(5n+3) {
+.quote:nth-child(5n+3) {
   left:-4em;
 }
 
-#content .quote:nth-child(5n+4) {
+.quote:nth-child(5n+4) {
   left:6.0em;
 }
 
-#content .quote:nth-child(5n+5) {
+.quote:nth-child(5n+5) {
   left:0em;
+}
+
+.quote ul.actions {
+  display:none;
+  position:absolute;
+  bottom:3.0em;
+  background-color:#EEE;
+  padding:0.0em 0.8em 0.2em;
+  -moz-border-radius:0.8em;
+}
+
+.quote ul.actions li {
+  list-style-type: none;
+  font-size:1.0em;
+  color:#777;
 }
 
 

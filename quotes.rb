@@ -20,6 +20,7 @@ module Quotes
     set :views, File.dirname(__FILE__) + "/templates"
     set :public, File.dirname(__FILE__) + "/public"
     set :static, true
+    set :methodoverride, true
     
     before do
       @current_user = session[:user]
@@ -34,9 +35,19 @@ module Quotes
       mustache :new_quote
     end
     
+    get "/quotes/:id/edit" do |id|
+      @quote = Quote.by_id(id)
+      mustache :edit_quote
+    end
+    
     post "/quotes" do
       Quote.create!(params.merge(:user => @current_user))
       redirect "/#{@current_user[:nickname]}"
+    end
+    
+    put "/quotes/:id" do |id|
+      Quote.update(params.merge(:user => @current_user, :id => id))
+      redirect "/"
     end
     
     get '/login' do
@@ -96,6 +107,22 @@ module Quotes
         end
       end
       
+      class EditQuote < Mustache
+        
+        def quote_path
+          "/quotes/#{@quote[:id]}"
+        end
+        
+        def text
+          @quote[:text]
+        end
+        
+        def author
+          @quote[:author]
+        end
+          
+      end
+      
       class QuoteIndex < Mustache
         def quotes
           @quotes.map do |quote|
@@ -107,7 +134,9 @@ module Quotes
                        when (100..250): "medium"
                        when (250..500): "large"
                        else "extra-large"
-                       end
+                       end,
+              :edit_path => "/quotes/#{quote[:id]}/edit",
+              :amendable? => quote[:user] == @current_user
             }
           end
         end
@@ -144,20 +173,34 @@ module Quotes
   class Quote < Model
   
     def self.create!(params)
+      params.merge! :id => redis.incr("quotes:quotes:last_id")
       data = encode(params)
-      redis.lpush "quotes:quotes:all", data
-      redis.lpush "quotes:quotes:nickname:#{params[:user][:nickname]}", data
+      redis.lpush "quotes:quotes:all", params[:id]
+      redis.lpush "quotes:quotes:nickname:#{params[:user][:nickname]}", params[:id]
+      redis.set "quotes:quotes:id:#{params[:id]}", data
       params
     end
   
     def self.latest
       range = redis.lrange "quotes:quotes:all", 0, 19
-      range.map{ |data| decode(data) }
+      range.map{ |id| by_id(id) }
     end
     
     def self.by_user(user)
       range = redis.lrange "quotes:quotes:nickname:#{user[:nickname]}", 0, -1
-      range.map{ |data| decode(data) }
+      range.map{ |id| by_id(id) }
+    end
+    
+    def self.by_id(id)
+      data = redis.get "quotes:quotes:id:#{id}"
+      decode(data)
+    end
+    
+    def self.update(params)
+      data = encode(params)
+      raise unless params[:user] == by_id(params[:id])[:user]
+      redis.set "quotes:quotes:id:#{params[:id]}", data
+      params
     end
     
   end
