@@ -120,6 +120,10 @@ module Quotes
         def author
           @quote[:author]
         end
+        
+        def source
+          @quote[:source]
+        end
           
       end
       
