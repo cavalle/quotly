@@ -5,11 +5,11 @@
   <div class='author'>
     ~ {{author}} ~
   </div>
+  {{# amendable? }}
   <ul class='actions'>
-    {{# amendable? }}
     <li class="amend">
       <a href='{{edit_path}}'>Amend</a>
     </li>
-    {{/ amendable? }}
   </ul>
+  {{/ amendable? }}
 </div>
