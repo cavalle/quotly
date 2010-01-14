@@ -17,8 +17,8 @@ feature "Amending quotes" do
     end
     
     within(:css, "#edit_quote") do
-      fill_in "Text", :with => "Art for art's sake is a philosophy of the well-fed."
-      fill_in "Author", :with => "Frank Lloyd Wright"
+      fill_in "Quote", :with => "Art for art's sake is a philosophy of the well-fed."
+      fill_in "By", :with => "Frank Lloyd Wright"
       click_button "Amend quote"
     end
     
@@ -40,8 +40,9 @@ feature "Amending quotes" do
     end
     
     within(:css, "#edit_quote") do
-      fill_in "Text", :with => "Art for art's sake is a philosophy of the well-fed."
-      fill_in "Author", :with => "Frank Lloyd Wright"
+      fill_in "Quote", :with => "Art for art's sake is a philosophy of the well-fed."
+      fill_in "By", :with => "Frank Lloyd Wright"
+      fill_in "From", :with => "Unknown"
       click_button "Amend quote"
     end
     
@@ -49,6 +50,7 @@ feature "Amending quotes" do
     within(:css, ".quote") do
       page.should have_css(".text", :text => "Art for art's sake is a philosophy of the well-fed.")
       page.should have_css(".author", :text => "Frank Lloyd Wright")
+      page.should have_css(".source", :text => "Unknow")
     end
   end
   

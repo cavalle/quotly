@@ -128,6 +128,8 @@ module Quotes
           @quotes.map do |quote|
             { :text => quote[:text],
               :author => quote[:author],
+              :source => quote[:source],
+              :source? => quote[:source].present?,
               :size => case quote[:text].length
                        when (0..40): "extra-small"
                        when (40..100): "small"

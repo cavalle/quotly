@@ -2,8 +2,15 @@
   <blockquote class='text'>
     {{text}}
   </blockquote>
-  <div class='author'>
-    ~ {{author}} ~
+  <div class="quote_foot">
+    <div class='author'>
+      {{author}}
+    </div>
+    {{# source? }}
+    <div class='source'>
+      {{source}}
+    </div>
+    {{/ source? }}
   </div>
   {{# amendable? }}
   <ul class='actions'>
