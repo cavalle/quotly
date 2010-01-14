@@ -3,13 +3,10 @@
     {{text}}
   </blockquote>
   <div class="quote_foot">
-    <div class='author'>
-      {{author}}
-    </div>
-    {{# source? }}
-    <div class='source'>
-      {{source}}
-    </div>
+    &mdash;<span class='author'>{{author}}</span>{{# source? }},
+    <span class='source'>
+      &nbsp;{{source}}
+    </span>
     {{/ source? }}
   </div>
   {{# amendable? }}
