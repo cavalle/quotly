@@ -147,7 +147,7 @@ a {
 
 .quote.large blockquote { font-size:1.6em; }
 
-.quote.extra-large blockquote { font-size:1.2em; }
+.quote.extra-large blockquote { font-size:1.4em; }
 
 .quote:nth-child(5n+1) {
   left:-6.0em;
