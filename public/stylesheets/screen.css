@@ -207,7 +207,7 @@ form#providers_signin {
   text-align:center;
   margin-left:auto;
   margin-right:auto;
-  width:615px;
+  width:410px;
 }
 
 form#providers_signin button {
@@ -242,6 +242,10 @@ form#providers_signin button#login_with_yahoo {
 
 form#providers_signin button#login_with_flickr {
   background-image: url(/images/login_providers/flickr.png);
+}
+
+form#providers_signin button#login_with_facebook {
+  background-image: url(/images/login_providers/facebook.png);
 }
 
 form#providers_signin button span {

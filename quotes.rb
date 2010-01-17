@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + "/vendor/gems/environment.rb"
+require 'md5'
 Bundler.require_env
 
 module Quotes
@@ -21,6 +22,8 @@ module Quotes
     set :public, File.dirname(__FILE__) + "/public"
     set :static, true
     set :methodoverride, true
+    
+    APP_CONFIG = YAML.load_file(File.dirname(__FILE__) + "/config/config.yml").freeze
     
     before do
       @current_user = session[:user]
@@ -68,7 +71,31 @@ module Quotes
       redirect '/'
     end
     
+    get '/fb_success' do
+      req_params = { :method => "Auth.getSession",
+                     :api_key => APP_CONFIG[:facebook][:api_key],
+                     :v => "1.0",
+                     :auth_token => params[:auth_token] }
+      
+      req_params[:sig] = MD5.md5(req_params.sort_by{|key, value| key.to_s}.map{|a|a.join("=")}.join + APP_CONFIG[:facebook][:secret])
+      
+      resp = Net::HTTP.post_form(URI.parse("http://api.facebook.com/restserver.php"), req_params)
+      result = Hash.from_xml(resp.body)["Auth_getSession_response"]
+      
+      session[:identity_url] = result["uid"]
+      if session[:user] = User.by_identity_url(result["uid"])
+        redirect '/'
+      else
+        redirect '/register'
+      end
+      
+    end
+    
     post '/login' do
+      if params[:provider] == "facebook"
+        redirect "http://www.facebook.com/login.php?api_key=#{APP_CONFIG[:facebook][:api_key]}&fbconnect=true&v=1.0&connect_display=page&next=/fb_success"
+        return
+      end
       if resp = request.env["rack.openid.response"]
         if resp.status == :success
           session[:identity_url] = resp.identity_url
@@ -81,7 +108,7 @@ module Quotes
           "Login not succesful #{resp.status}"
         end
       else
-        headers 'WWW-Authenticate' => Rack::OpenID.build_header(params.merge({:required => 'email'}))
+        headers 'WWW-Authenticate' => Rack::OpenID.build_header(params)
         throw :halt, [401, 'got openid?']
       end
     end
