@@ -215,6 +215,7 @@ form#providers_signin button {
   display:block;
   float:left;
   cursor:pointer;
+  background-position: center bottom;
   
   font-family: inherit;
   font-size: inherit;
@@ -223,27 +224,19 @@ form#providers_signin button {
   font-weight: inherit;
 }
 
+form#providers_signin button:hover {
+  background-position: center top;
+}
+
 form#providers_signin button#login_with_google {
-  background-image: url(/images/login_providers/google_grey.png);
-}
-
-form#providers_signin button#login_with_yahoo {
-  background-image: url(/images/login_providers/yahoo_grey.png);
-}
-
-form#providers_signin button#login_with_flickr {
-  background-image: url(/images/login_providers/flickr_grey.png);
-}
-
-form#providers_signin button#login_with_google:hover {
   background-image: url(/images/login_providers/google.png);
 }
 
-form#providers_signin button#login_with_yahoo:hover {
+form#providers_signin button#login_with_yahoo {
   background-image: url(/images/login_providers/yahoo.png);
 }
 
-form#providers_signin button#login_with_flickr:hover {
+form#providers_signin button#login_with_flickr {
   background-image: url(/images/login_providers/flickr.png);
 }
 
@@ -261,12 +254,12 @@ form#openid_signin label {
 
 input#openid_identifier {
   width:17.0em;
-  background: #FFF url(/images/login_providers/openid_grey.png) no-repeat scroll center left;
+  background: #FFF url(/images/login_providers/openid.png) no-repeat scroll left bottom;
   padding-left:2.2em;
 }
 
-input#openid_identifier:focus {
-  background-image: url(/images/login_providers/openid.png);
+input#openid_identifier:focus  {
+  background-position: left top;
 }
 
 form#openid_signin {
