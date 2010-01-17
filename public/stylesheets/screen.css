@@ -265,7 +265,7 @@ input#openid_identifier {
   padding-left:2.2em;
 }
 
-input#openid_identifier.selected {
+input#openid_identifier:focus {
   background-image: url(/images/login_providers/openid.png);
 }
 
