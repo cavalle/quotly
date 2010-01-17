@@ -9,7 +9,7 @@ body {
     line-height: 1.5em;
     text-align: center;
     background-image:url(/images/bg.gif);
-    color:#363940;
+    color:#373c52;
 }
 
 *{
@@ -65,18 +65,6 @@ a {
   padding-top:2.0em;
 }
 
-#content form#login {
-  background-color:white;
-  padding:2.50em;
-  width:50.0em;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-#content form#login label {
-  font-size:1.5em;
-}
-
 #content h2 {
   font-size:x-small;
   background-color:white;
@@ -90,6 +78,15 @@ a {
   font-size:3.5em;
   color:#686F7E;
 }
+
+/* Forms */
+
+input[type=text], textarea {
+  border:solid 2px #e3e5e8;
+  padding:0.3em;
+}
+
+/* Quotes */
 
 .quotes {
   clear:left;
@@ -184,8 +181,103 @@ a {
   color:#777;
 }
 
+/* Login page */
 
+#sign_in_notice {
+  clear:left;
+  padding:1.8em 2.5em;
+  background-color:white;
+  margin-bottom:2.5em;
+  width:44.0em;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+}
 
+#sign_in_notice p {
+  font-size:1.6em;
+  line-height:1.6em;
+}
 
+form#providers_signin {
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
+  width:615px;
+}
 
+form#providers_signin button {
+  background-color:white;
+  border:0;
+  width:165px;
+  height:55px;
+  margin:0 2.0em 2.0em;
+  display:block;
+  float:left;
+  cursor:pointer;
+  
+  font-family: inherit;
+  font-size: inherit;
+  font-variant: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+}
 
+form#providers_signin button#login_with_google {
+  background-image: url(/images/login_providers/google_grey.png);
+}
+
+form#providers_signin button#login_with_yahoo {
+  background-image: url(/images/login_providers/yahoo_grey.png);
+}
+
+form#providers_signin button#login_with_flickr {
+  background-image: url(/images/login_providers/flickr_grey.png);
+}
+
+form#providers_signin button#login_with_google:hover {
+  background-image: url(/images/login_providers/google.png);
+}
+
+form#providers_signin button#login_with_yahoo:hover {
+  background-image: url(/images/login_providers/yahoo.png);
+}
+
+form#providers_signin button#login_with_flickr:hover {
+  background-image: url(/images/login_providers/flickr.png);
+}
+
+form#providers_signin button span {
+  display:none;
+}
+
+form#providers_signin button span {
+  font-size:2.5em;
+}
+
+form#openid_signin label {
+  font-size:1.3em;
+}
+
+input#openid_identifier {
+  width:17.0em;
+  background: #FFF url(/images/login_providers/openid_grey.png) no-repeat scroll center left;
+  padding-left:2.2em;
+}
+
+input#openid_identifier.selected {
+  background-image: url(/images/login_providers/openid.png);
+}
+
+form#openid_signin {
+  clear:left;
+  background-color:white;
+  padding:1.8em 2.5em;
+  width:42.0em;
+  text-align:center;
+  margin: 3.0em auto;
+}
+
+form#openid_signin label, form#openid_signin input {
+  margin-right:0.5em;
+}
