@@ -185,6 +185,50 @@ input[type=text]:focus, textarea:focus {
   color:#777;
 }
 
+form.quote_form {
+  padding:2em 2.5em;
+  background-color:white;
+  width:45.0em;
+  margin:0 auto;
+  clear:left;
+  text-align:right;
+}
+
+form.quote_form input[type=text] {
+  width:190px;
+}
+
+form.quote_form input[type=text], form.quote_form textarea {
+  font-family:inherit;
+}
+
+form.quote_form label {
+  font-size:1.5em;
+  float:left;
+  margin:0.3em 0.5em 0em 166px;
+  width:5em;
+}
+
+form.quote_form label[for=text] {
+  display:none;
+}
+
+form.quote_form textarea {
+  width:440px;
+  height:120px;
+}
+
+form.quote_form label, form.quote_form input, form.quote_form textarea{
+  display:block;
+  margin-bottom:1.0em;
+}
+
+form.quote_form input[type=submit] {
+  display:inline;
+  margin-bottom:0;
+  margin-top:1.0em;
+}
+
 /* Login page */
 
 #sign_in_notice {
