@@ -86,6 +86,10 @@ input[type=text], textarea {
   padding:0.3em;
 }
 
+input[type=text]:focus, textarea:focus {
+  border-color:#cdd0d5;
+}
+
 /* Quotes */
 
 .quotes {
