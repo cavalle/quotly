@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/vendor/gems/environment.rb"
-require 'md5'
 Bundler.require_env
+require File.dirname(__FILE__) + "/lib/rack/auth"
 
 module Quotes
   def self.redis
@@ -15,16 +15,17 @@ module Quotes
   class App < Sinatra::Base
     register Mustache::Sinatra
     
+    APP_CONFIG = YAML.load_file(File.dirname(__FILE__) + "/config/config.yml").freeze
+    
     use Rack::Session::Cookie
     use Rack::OpenID
-    
+    use Rack::Auth::FacebookConnect, APP_CONFIG[:facebook]
+
     set :views, File.dirname(__FILE__) + "/templates"
     set :public, File.dirname(__FILE__) + "/public"
     set :static, true
     set :methodoverride, true
-    
-    APP_CONFIG = YAML.load_file(File.dirname(__FILE__) + "/config/config.yml").freeze
-    
+
     before do
       @current_user = session[:user]
     end
@@ -67,39 +68,15 @@ module Quotes
     end
     
     post '/register' do
-      session[:user] = User.create!(:nickname => params[:nickname], :identity_url => session[:identity_url])
+      session[:user] = User.create!(:nickname => params[:nickname], :external_id => session[:external_id])
       redirect '/'
     end
     
-    get '/fb_success' do
-      req_params = { :method => "Auth.getSession",
-                     :api_key => APP_CONFIG[:facebook][:api_key],
-                     :v => "1.0",
-                     :auth_token => params[:auth_token] }
-      
-      req_params[:sig] = MD5.md5(req_params.sort_by{|key, value| key.to_s}.map{|a|a.join("=")}.join + APP_CONFIG[:facebook][:secret])
-      
-      resp = Net::HTTP.post_form(URI.parse("http://api.facebook.com/restserver.php"), req_params)
-      result = Hash.from_xml(resp.body)["Auth_getSession_response"]
-      
-      session[:identity_url] = result["uid"]
-      if session[:user] = User.by_identity_url(result["uid"])
-        redirect '/'
-      else
-        redirect '/register'
-      end
-      
-    end
-    
     post '/login' do
-      if params[:provider] == "facebook"
-        redirect "http://www.facebook.com/login.php?api_key=#{APP_CONFIG[:facebook][:api_key]}&fbconnect=true&v=1.0&connect_display=page&next=/fb_success"
-        return
-      end
-      if resp = request.env["rack.openid.response"]
+      if resp = request.env["rack.openid.response"] || request.env["rack.facebook.response"]
         if resp.status == :success
-          session[:identity_url] = resp.identity_url
-          if session[:user] = User.by_identity_url(resp.identity_url)
+          session[:external_id] = resp.external_id
+          if session[:user] = User.by_external_id(resp.external_id)
             redirect '/'
           else
             redirect '/register'
@@ -108,8 +85,8 @@ module Quotes
           "Login not succesful #{resp.status}"
         end
       else
-        headers 'WWW-Authenticate' => Rack::OpenID.build_header(params)
-        throw :halt, [401, 'got openid?']
+        headers 'WWW-Authenticate' => Rack::Auth.build_header(params)
+        throw :halt, [401, 'auth required']
       end
     end
     
@@ -239,8 +216,8 @@ module Quotes
   end
   
   class User < Model
-    def self.by_identity_url(identity_url)
-      decode redis["quotes:users:identity_url:#{identity_url}"]
+    def self.by_external_id(external_id)
+      decode redis["quotes:users:identity_url:#{external_id}"]
     end
     
     def self.by_nickname(nickname)
@@ -250,7 +227,7 @@ module Quotes
     def self.create!(params)
       data = encode(params)
       redis["quotes:users:nickname:#{params[:nickname]}"] = data
-      redis["quotes:users:identity_url:#{params[:identity_url]}"] = data
+      redis["quotes:users:identity_url:#{params[:external_id]}"] = data
       params
     end
   end
