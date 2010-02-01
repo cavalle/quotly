@@ -1,6 +1,7 @@
 bin/*
-vendor/gems/*
-!vendor/gems/cache/
+vendor/gems/environment.rb
+vendor/gems/**/**/*
+!vendor/gems/**/**/cache/
 capybara-*.html
 dump.rdb
 quotes.tmproj
