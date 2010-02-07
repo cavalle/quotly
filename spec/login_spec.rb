@@ -16,7 +16,7 @@ feature "Login & Register" do
     click_link "Login or Register"
 
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
 
     fill_in "Choose a nickname", :with => "jdoe"
     click_button "Register!"
@@ -38,7 +38,7 @@ feature "Login & Register" do
     click_link "Login or Register"
 
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
     
     visit "/"
 
@@ -47,13 +47,13 @@ feature "Login & Register" do
   end
 
   scenario "Login with valid OpenID and an existing account" do
-    create_user :nickname => "jdoe", :identity_url => "http://jdoe.openid.com"
+    create_user :nickname => "jdoe", :external_id => "http://jdoe.openid.com"
     
     visit "/"
     click_link "Login or Register"
     
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
     
     page.path.should == "/"
     
@@ -62,13 +62,13 @@ feature "Login & Register" do
   end
   
   scenario "Logout" do
-    create_user :nickname => "jdoe", :identity_url => "http://jdoe.openid.com"
+    create_user :nickname => "jdoe", :external_id => "http://jdoe.openid.com"
     
     visit "/"
     click_link "Login or Register"
     
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
     
     click_link "Logout"
     
@@ -81,7 +81,7 @@ feature "Login & Register" do
     click_link "Login or Register"
 
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
 
     fill_in "Choose a nickname", :with => "jdoe"
     click_button "Register!"
@@ -90,7 +90,7 @@ feature "Login & Register" do
     click_link "Login or Register"
 
     fill_in "OpenID", :with => "http://jdoe.openid.com"
-    click_button "Login!"
+    click_button "Go!"
 
     page.path.should == "/"
 

@@ -13,7 +13,7 @@ module Factories
   
   def create_user(params = {})
     params[:nickname]     ||= Faker::Internet.user_name
-    params[:identity_url] ||= Faker::Internet.domain_name
+    params[:external_id]  ||= Faker::Internet.domain_name
     Quotes::User.create!(params)
   end
 end
@@ -21,8 +21,8 @@ end
 module Helpers
   def login_as(user)
     visit "/login"
-    fill_in "OpenID", :with => user[:identity_url]
-    click_button "Login!"
+    fill_in "OpenID", :with => user[:external_id]
+    click_button "Go!"
   end
 end
 
@@ -37,7 +37,7 @@ class Rack::OpenID
       req = Rack::Request.new(env)
       env["REQUEST_METHOD"] = req.params["method"]
       env["PATH_INFO"] = req.params["return"]
-      env["rack.openid.response"] = Struct.new(:status, :identity_url).new(:success, req.params["id"])
+      env["rack.openid.response"] = Struct.new(:status, :external_id).new(:success, req.params["id"])
     end
     
     status, headers, body = @app.call(env)
@@ -78,10 +78,5 @@ module Capybara
 end
 
 class Capybara::Driver::RackTest
-  def current_url
-    request.url
-  end
-  def current_path
-    request.path
-  end
+  public :current_path
 end
