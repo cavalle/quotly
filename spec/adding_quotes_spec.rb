@@ -25,7 +25,7 @@ feature "Adding quotes" do
     
     page.should have_css(".quote", :count => 1)
     within(:css, ".quote") do
-      page.should have_css(".text", :text => "Art for art's sake is a philosophy of the well-fed.")
+      page.should have_css(".text", :text => "Art for art’s sake is a philosophy of the well-fed.")
       page.should have_css(".author", :text => "Frank Lloyd Wright")
       page.should_not have_css(".source")
     end
@@ -34,7 +34,7 @@ feature "Adding quotes" do
     
     page.should have_css(".quote", :count => 1)
     within(:css, ".quote") do
-      page.should have_css(".text", :text => "Art for art's sake is a philosophy of the well-fed.")
+      page.should have_css(".text", :text => "Art for art’s sake is a philosophy of the well-fed.")
       page.should have_css(".author", :text => "Frank Lloyd Wright")
     end
   end
@@ -48,18 +48,40 @@ feature "Adding quotes" do
     click_link "Add new quote"
     
     within(:css, "#new_quote") do
-      fill_in "Quote", :with => "The night of the fight, you may feel a slight sting. That's pride fucking with you. Fuck pride. Pride only hurts, it never helps."
+      fill_in "Quote", :with => "The night of the fight, you may feel a slight sting. That’s pride fucking with you. Fuck pride. Pride only hurts, it never helps."
       fill_in "By", :with => "Marcellus Wallace"
       fill_in "From", :with => "Pulp Fiction"
       click_button "Add quote!"
     end
     
     within(:css, ".quote") do
-      page.should have_css(".text", :text => "The night of the fight, you may feel a slight sting. That's pride fucking with you. Fuck pride. Pride only hurts, it never helps.")
+      page.should have_css(".text", :text => "The night of the fight, you may feel a slight sting. That’s pride fucking with you. Fuck pride. Pride only hurts, it never helps.")
       page.should have_css(".author", :text => "Marcellus Wallace")
       page.should have_css(".source", :text => "Pulp Fiction")
     end
     
+  end
+  
+  scenario "Creating quotes with style" do
+    user = create_user :nickname => "jdoe"
+    login_as user
+
+    visit "/"
+
+    click_link "Add new quote"
+
+    within(:css, "#new_quote") do
+      fill_in "Quote", :with => "The night of the fight,\n\nyou may _feel_ a slight sting"
+      fill_in "By", :with => "Marcellus Wallace"
+      click_button "Add quote!"
+    end 
+    
+    within(:css, ".quote") do
+      page.should have_css(".text p", :text => "The night of the fight")
+      page.should have_css(".text p", :text => /you may feel a slight sting/)
+      page.should have_css(".text em", :text => "feel")
+    end
+
   end
   
 end

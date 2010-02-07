@@ -134,7 +134,7 @@ module Quotes
       class QuoteIndex < Mustache
         def quotes
           @quotes.map do |quote|
-            { :text => quote[:text],
+            { :text => quote[:html_text],
               :author => quote[:author],
               :source => quote[:source],
               :source? => quote[:source].present?,
@@ -184,11 +184,17 @@ module Quotes
   
     def self.create!(params)
       params.merge! :id => redis.incr("quotes:quotes:last_id")
+      params[:html_text] = RedCloth.new(params[:text]).to_html
       data = encode(params)
       redis.lpush "quotes:quotes:all", params[:id]
       redis.lpush "quotes:quotes:nickname:#{params[:user][:nickname]}", params[:id]
       redis.set "quotes:quotes:id:#{params[:id]}", data
       params
+    end
+    
+    def self.all
+      range = redis.lrange "quotes:quotes:all", 0, -1
+      range.map{ |id| by_id(id) }
     end
   
     def self.latest
@@ -207,6 +213,7 @@ module Quotes
     end
     
     def self.update(params)
+      params[:html_text] = RedCloth.new(params[:text]).to_html
       data = encode(params)
       raise unless params[:user] == by_id(params[:id])[:user]
       redis.set "quotes:quotes:id:#{params[:id]}", data

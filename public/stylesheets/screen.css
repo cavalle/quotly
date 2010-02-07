@@ -112,6 +112,10 @@ input[type=text]:focus, textarea:focus {
   line-height:1.66em;
 }
 
+.quote blockquote p {
+  margin-bottom:0.7em;
+}
+
 .quote_foot {
   text-align:right;
   width:70%;

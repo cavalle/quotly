@@ -24,7 +24,7 @@ feature "Amending quotes" do
     
     page.should have_css(".quote", :count => 1)
     within(:css, ".quote") do
-      page.should have_css(".text", :text => "Art for art's sake is a philosophy of the well-fed.")
+      page.should have_css(".text", :text => "Art for art’s sake is a philosophy of the well-fed.")
       page.should have_css(".author", :text => "Frank Lloyd Wright")
     end
   end
@@ -48,9 +48,32 @@ feature "Amending quotes" do
     
     page.should have_css(".quote", :count => 1)
     within(:css, ".quote") do
-      page.should have_css(".text", :text => "Art for art's sake is a philosophy of the well-fed.")
+      page.should have_css(".text", :text => "Art for art’s sake is a philosophy of the well-fed.")
       page.should have_css(".author", :text => "Frank Lloyd Wright")
       page.should have_css(".source", :text => "Unknow")
+    end
+  end
+  
+  scenario "Amending styled quote" do
+    create_quote :user => @user, :text => "_Wrong_ text", :author => "Wrong author"
+    
+    login_as @user
+    visit "/"
+    
+    within(:css, ".quote") do
+      click_link "Amend"
+    end
+    
+    within(:css, "#edit_quote") do
+      page.should have_css("textarea", :text => "_Wrong_ text")
+      fill_in "Quote", :with => "*Wrong* text"
+      click_button "Amend quote"
+    end
+    
+    page.should have_css(".quote", :count => 1)
+    within(:css, ".quote") do
+      page.should have_css(".text", :text => /Wrong text/)
+      page.should have_css(".text strong", :text => "Wrong")
     end
   end
   

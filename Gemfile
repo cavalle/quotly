@@ -8,6 +8,7 @@ gem "activesupport", :require_as => 'active_support'
 gem "i18n", ">= 0.1.3", :require_as => nil
 gem "builder", "~> 2.1.2", :require_as => nil
 gem "rack-openid", :require_as => 'rack/openid'
+gem "RedCloth"
 
 only :test do
   gem "steak"
