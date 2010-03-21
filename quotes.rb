@@ -55,11 +55,11 @@ module Quotes
     end
     
     get '/authors' do
-      Quote.all.map{|q|q[:author]}.select{|a|a.downcase.include?(params[:q].downcase)}.uniq.flatten.to_json
+      Quote.all.map{|q|q[:author]}.select{|a|a.to_s.downcase.include?(params[:q].to_s.downcase)}.uniq.flatten.to_json
     end
     
     get '/sources' do
-      Quote.all.map{|q|q[:source]}.select{|s|s.downcase.include?(params[:q].downcase)}.uniq.flatten.to_json
+      Quote.all.map{|q|q[:source]}.select{|s|s.to_s.downcase.include?(params[:q].to_s.downcase)}.uniq.flatten.to_json
     end
     
     get '/login' do
