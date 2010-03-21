@@ -84,4 +84,66 @@ feature "Adding quotes" do
 
   end
   
+  context "only JS" do
+    
+    before { Capybara.current_driver = :culerity }
+    after  { Capybara.use_default_driver }
+  
+    scenario "Author field is autocompleted" do
+      user = create_user :nickname => "jdoe"
+      create_quote :author => "Frank Sinatra"
+      create_quote :author => "Frank Lloyd Wright"
+      create_quote :author => "Alan Francis"
+      login_as user
+
+      visit "/"
+
+      click_link "Add new quote"
+      
+      within(:css, "#new_quote") do
+        fill_in "By", :with => "Fran"
+      end
+            
+      page.should have_content("Frank Sinatra")
+      page.should have_content("Frank Lloyd Wright")
+      page.should have_content("Alan Francis")
+      
+      within(:css, "#new_quote") do
+        fill_in "By", :with => "Frank"
+      end
+      
+      page.should have_no_content("Alan Francis")
+      page.should have_content("Frank Sinatra")
+      page.should have_content("Frank Lloyd Wright")
+    end
+    
+    scenario "Source field is autocompleted" do
+      user = create_user :nickname => "jdoe"
+      create_quote :source => "Sense and Sensibility"
+      create_quote :source => "It makes no sense"
+      create_quote :source => "My own sensibility"
+      login_as user
+    
+      visit "/"
+    
+      click_link "Add new quote"
+      
+      within(:css, "#new_quote") do
+        fill_in "From", :with => "sens"
+      end
+            
+      page.should have_content("Sense and Sensibility")
+      page.should have_content("It makes no sense")
+      page.should have_content("My own sensibility")
+      
+      within(:css, "#new_quote") do
+        fill_in "From", :with => "sense"
+      end
+      
+      page.should have_no_content("My own sensibility")
+      page.should have_content("It makes no sense")
+      page.should have_content("Sense and Sensibility")
+    end
+  
+  end
 end

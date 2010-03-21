@@ -99,11 +99,11 @@ input[type=text]:focus, textarea:focus {
 .quote {
   width:47.5em;
   padding:2.5em 3em 2em;
-  background-color:white;
   margin-left:auto;
   margin-right:auto;
   margin-bottom:3.5em;
   position:relative;
+  background:white;
 }
 
 .quote blockquote {
@@ -231,6 +231,32 @@ form.quote_form input[type=submit] {
   display:inline;
   margin-bottom:0;
   margin-top:1.0em;
+}
+
+.ui-autocomplete {
+  position:absolute;
+  background-color:white;
+  border:2px solid #E3E5E8;
+  -moz-box-shadow:2px 2px 4px #AAAAAA;
+  padding:0 3px;
+}
+
+.ui-menu-item {
+  text-align: left;
+  list-style: none;
+  color:#373C52;
+}
+
+.ui-menu-item a {
+  display:block;
+  padding:5px;
+  margin:0 -3px;
+  font-size:11px;
+}
+
+.ui-menu-item a.ui-state-hover,
+.ui-menu-item a.ui-state-active {
+  background-color: #E3E5E8;
 }
 
 /* Login page */

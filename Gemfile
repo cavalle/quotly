@@ -14,4 +14,6 @@ only :test do
   gem "steak"
   gem "capybara", :require_as => %w{capybara capybara/dsl}
   gem "faker"
+  gem "celerity", :require_as => []
+  gem "culerity", :require_as => []
 end

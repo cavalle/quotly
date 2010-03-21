@@ -54,6 +54,14 @@ module Quotes
       redirect "/"
     end
     
+    get '/authors' do
+      Quote.all.map{|q|q[:author]}.select{|a|a.downcase.include?(params[:q].downcase)}.uniq.flatten.to_json
+    end
+    
+    get '/sources' do
+      Quote.all.map{|q|q[:source]}.select{|s|s.downcase.include?(params[:q].downcase)}.uniq.flatten.to_json
+    end
+    
     get '/login' do
       mustache :login
     end

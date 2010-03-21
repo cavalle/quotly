@@ -7,3 +7,4 @@ dump.rdb
 quotes.tmproj
 mkmf.log
 config/config.yml
+tmp/restart.txt
