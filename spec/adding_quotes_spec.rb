@@ -122,6 +122,7 @@ feature "Adding quotes" do
       create_quote :source => "Sense and Sensibility"
       create_quote :source => "It makes no sense"
       create_quote :source => "My own sensibility"
+      create_quote :source => nil # Make sure empty sources doesn't break the functionality
       login_as user
     
       visit "/"
