@@ -109,7 +109,16 @@ module Quotes
     end
     
     module Views
+      
       class Layout < Mustache
+        def page_title
+          "Social quoting"
+        end
+          
+        def page_description
+          "Keep, share and discover awesome, memorable, inspirational quotes from your favorite books, movies or people (And micro-stories too!)"
+        end
+        
         def logged_in?
           @current_user
         end
@@ -119,7 +128,29 @@ module Quotes
         end
       end
       
-      class EditQuote < Mustache
+      class Login < Layout
+        def page_title
+          "Login or Register"
+        end
+      end
+      
+      class Register < Layout
+        def page_title
+          "Register"
+        end
+      end
+      
+      class NewQuote < Layout
+        def page_title
+          "Add a new quote"
+        end
+      end
+      
+      class EditQuote < Layout
+        
+        def page_title
+          "Amend quote"
+        end
         
         def quote_path
           "/quotes/#{@quote[:id]}"
@@ -139,7 +170,7 @@ module Quotes
           
       end
       
-      class QuoteIndex < Mustache
+      class QuoteIndex < Layout
         def quotes
           @quotes.map do |quote|
             { :text => quote[:html_text],
@@ -161,6 +192,10 @@ module Quotes
       end
       
       class UserShow < QuoteIndex
+        
+        def page_title
+          "#{nickname}'s saved quotes"
+        end
         
         def nickname
           @user[:nickname]
