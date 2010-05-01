@@ -3,8 +3,7 @@ require File.dirname(__FILE__) + "/spec_helper"
 feature "Main page" do
   scenario "should load" do
     visit "/"
-    
-    page.should have_content("quot.ly")
+    page.should have_content("Quotly")
     page.should_not have_css(".quote")
   end
   
