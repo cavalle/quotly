@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + "/vendor/gems/environment.rb"
-Bundler.require_env
+require "bundler"
+Bundler.require
 require File.dirname(__FILE__) + "/lib/rack/auth"
 
 module Quotes

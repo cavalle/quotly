@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) + '/../quotes'
-
-Bundler.require_env(:test)
+Bundler.require :test
 
 module Factories
   def create_quote(params = {})
