@@ -16,4 +16,11 @@
     </li>
   </ul>
   {{/ amendable? }}
+  {{# added_by? }}
+  <ul class='actions'>
+    <li class="added_by">
+      Added by <a href='{{user_path}}'>{{user_nickname}}</a>
+    </li>
+  </ul>
+  {{/ added_by? }}
 </div>

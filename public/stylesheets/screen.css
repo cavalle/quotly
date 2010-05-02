@@ -179,13 +179,14 @@ input[type=text]:focus, textarea:focus {
   position:absolute;
   bottom:2.3em;
   background-color:#EEE;
-  padding:0.0em 0.8em 0.2em;
+  padding:0.2em 1em 0.2em;
   -moz-border-radius:0.8em;
+  -webkit-border-radius:0.8em;
 }
 
 .quote ul.actions li {
   list-style-type: none;
-  font-size:1.0em;
+  font-size:1.15em;
   color:#777;
 }
 
@@ -238,6 +239,7 @@ form.quote_form input[type=submit] {
   background-color:white;
   border:2px solid #E3E5E8;
   -moz-box-shadow:2px 2px 4px #AAAAAA;
+  -webkit-box-shadow:2px 2px 4px #AAAAAA;
   padding:0 3px;
 }
 

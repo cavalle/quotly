@@ -186,7 +186,10 @@ module Quotes
                        else "extra-large"
                        end,
               :edit_path => "/quotes/#{quote[:id]}/edit",
-              :amendable? => quote[:user] == @current_user
+              :amendable? => quote[:user] == @current_user,
+              :added_by? => quote[:user] != @current_user,
+              :user_path => "/#{quote[:user][:nickname]}",
+              :user_nickname => quote[:user][:nickname]
             }
           end
         end
@@ -204,6 +207,10 @@ module Quotes
         
         def no_quotes?
           @quotes.empty?
+        end
+        
+        def quotes
+          super.map { |quote| quote.merge(:added_by? => false) }
         end
       end
     end

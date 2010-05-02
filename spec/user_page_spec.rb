@@ -38,4 +38,24 @@ feature "User page" do
     page.path.should == "/jdoe"
   end
   
+  scenario "Quotes link to the user who added them" do
+    user = create_user :nickname => "jdoe"
+    create_quote :text => "The language of friendship is not words, but meanings", 
+                 :author => "Henry David Thoreau", 
+                 :user => user
+    
+    visit "/"
+    
+    within(:css, ".quote") do
+      page.should have_content("Added by jdoe")
+      click_link "jdoe"
+    end
+    
+    page.path.should == "/jdoe"
+    
+    within(:css, ".quote") do
+      page.should_not have_content("Added by jdoe")
+    end
+  end
+  
 end
