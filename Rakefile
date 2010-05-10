@@ -8,3 +8,7 @@ Spec::Rake::SpecTask.new do |t|
 end
 
 task :default => ["spec"]
+
+task :deploy do
+  sh "ssh cirrus.lmcavalle.com 'cd chef; sudo chef-solo -c config/solo.rb -j config/node.json'"
+end
