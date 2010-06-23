@@ -40,6 +40,11 @@ module Quotes
       mustache :new_quote
     end
     
+    get "/quotes/:id" do |id|
+      @quote = Quote.by_id(id)
+      mustache :show_quote
+    end
+    
     get "/quotes/:id/edit" do |id|
       @quote = Quote.by_id(id)
       mustache :edit_quote
@@ -171,26 +176,43 @@ module Quotes
           
       end
       
+      class ShowQuote < Layout
+        def page_title
+          "A quote"
+        end
+        
+        def quote
+          QuoteView.new(@quote, @current_user)
+        end
+      end
+      
+      module QuoteView
+        def self.new(quote, current_user)
+          { :text => quote[:html_text],
+            :author => quote[:author],
+            :source => quote[:source],
+            :source? => quote[:source].present?,
+            :size => case quote[:text].length
+                     when (0..40): "extra-small"
+                     when (40..100): "small"
+                     when (100..250): "medium"
+                     when (250..500): "large"
+                     else "extra-large"
+                     end,
+            :edit_path => "/quotes/#{quote[:id]}/edit",
+            :show_path => "/quotes/#{quote[:id]}",
+            :amendable? => quote[:user] == current_user,
+            :added_by? => quote[:user] != current_user,
+            :user_path => "/#{quote[:user][:nickname]}",
+            :user_nickname => quote[:user][:nickname]
+          }
+        end
+      end
+      
       class QuoteIndex < Layout
         def quotes
           @quotes.map do |quote|
-            { :text => quote[:html_text],
-              :author => quote[:author],
-              :source => quote[:source],
-              :source? => quote[:source].present?,
-              :size => case quote[:text].length
-                       when (0..40): "extra-small"
-                       when (40..100): "small"
-                       when (100..250): "medium"
-                       when (250..500): "large"
-                       else "extra-large"
-                       end,
-              :edit_path => "/quotes/#{quote[:id]}/edit",
-              :amendable? => quote[:user] == @current_user,
-              :added_by? => quote[:user] != @current_user,
-              :user_path => "/#{quote[:user][:nickname]}",
-              :user_nickname => quote[:user][:nickname]
-            }
+            QuoteView.new(quote, @current_user)
           end
         end
       end
@@ -244,17 +266,17 @@ module Quotes
     end
     
     def self.all
-      range = redis.lrange "quotes:quotes:all", 0, -1
+      range = redis.lrange("quotes:quotes:all", 0, -1) || []
       range.map{ |id| by_id(id) }
     end
   
     def self.latest
-      range = redis.lrange "quotes:quotes:all", 0, 19
+      range = redis.lrange("quotes:quotes:all", 0, 19) || []
       range.map{ |id| by_id(id) }
     end
     
     def self.by_user(user)
-      range = redis.lrange "quotes:quotes:nickname:#{user[:nickname]}", 0, -1
+      range = redis.lrange("quotes:quotes:nickname:#{user[:nickname]}", 0, -1) || []
       range.map{ |id| by_id(id) }
     end
     

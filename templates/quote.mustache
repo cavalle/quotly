@@ -9,18 +9,23 @@
     </span>
     {{/ source? }}
   </div>
-  {{# amendable? }}
+  
   <ul class='actions'>
+    {{# amendable? }}
     <li class="amend">
       <a href='{{edit_path}}'>Amend</a>
     </li>
-  </ul>
-  {{/ amendable? }}
-  {{# added_by? }}
-  <ul class='actions'>
+    {{/ amendable? }}
+    
+    {{# added_by? }}
     <li class="added_by">
       Added by <a href='{{user_path}}'>{{user_nickname}}</a>
     </li>
+    {{/ added_by? }}
+    
+    <li class="link">
+      <a href="{{show_path}}">Link</a>
+    </li>
   </ul>
-  {{/ added_by? }}
+
 </div>

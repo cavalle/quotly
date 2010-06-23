@@ -188,7 +188,13 @@ input[type=text]:focus, textarea:focus {
   list-style-type: none;
   font-size:1.15em;
   color:#777;
+  display:inline;
 }
+
+.quote ul.actions li:not(:last-child):after {
+  content: "~";
+}
+
 
 form.quote_form {
   padding:2em 2.5em;

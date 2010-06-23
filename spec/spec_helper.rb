@@ -56,6 +56,7 @@ Spec::Runner.configure do |config|
   config.include Factories
   config.include Helpers
   config.include Paths
+  config.include Delorean
   
   Capybara.app = Quotes::App.new
   

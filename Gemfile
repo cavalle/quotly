@@ -15,4 +15,5 @@ group :test do
   gem "celerity", :require => nil
   gem "culerity", :require => nil
   gem "launchy", :require => nil
+  gem "delorean"
 end
