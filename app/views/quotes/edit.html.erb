@@ -1,0 +1,11 @@
+<h2><span>Amend a quote</span></h2>
+<form method="post" action="<%= quote_path(@presenter[:uid]) %>" id="edit_quote" class="quote_form">
+  <input type='hidden' name='_method' value='put'></input>
+  <label for="text">Quote</label>
+  <textarea id="text" name="text"><%= @presenter[:text] %></textarea>
+  <label for="author">By</label>
+  <input type="text" id="author" name="author" value="<%= @presenter[:author] %>"/>
+  <label for="source">From</label>
+  <input type="text" id="source" name="source" value="<%= @presenter[:source] %>"/>
+  <input type="submit" value="Amend quote"/>
+</form>

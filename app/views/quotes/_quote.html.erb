@@ -1,0 +1,29 @@
+<div class='quote <%= quote[:size] %>'>
+  <blockquote class='text'>
+    <%= quote[:html].html_safe %>
+  </blockquote>
+  <div class='quote_foot'>
+    &mdash;<span class='author'><%= quote[:author] %></span><% if quote[:source].present? %>,
+    <span class='source'>
+      &nbsp;<%= quote[:source] %>
+    </span>
+    <% end %>
+  </div>
+
+  <ul class='actions'>
+    <% if current_user && (current_user[:nickname] == quote[:nickname]) %>
+    <li class='amend'>
+      <a href='<%= edit_quote_path(quote[:uid]) %>'>Amend</a>
+    </li>
+    <% else %>
+    <li class='added_by'>
+      Added by <a href='/<%= quote[:nickname] %>'><%= quote[:nickname] %></a>
+    </li>
+    <% end %>
+
+    <li class='link'>
+      <a href='<%= quote_path(quote[:uid]) %>'>Link</a>
+    </li>
+  </ul>
+
+</div>
