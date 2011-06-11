@@ -1,4 +1,4 @@
-module Commands
+module CommandHelpers
   def add_quote(attrs = {})
     attrs[:text] ||= "Lorem ipsum dolor"
     Quote.new(attrs)
@@ -10,4 +10,4 @@ module Commands
   end
 end
 
-MiniTest::Unit::TestCase.send :include, Commands
+MiniTest::Unit::TestCase.send :include, CommandHelpers

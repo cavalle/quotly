@@ -3,7 +3,7 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'minitest/autorun'
 require 'capybara/rails'
 
-MiniTest::Unit::TestCase.send :include, Capybara
+MiniTest::Unit::TestCase.send :include, Capybara::DSL
 MiniTest::Unit::TestCase.send :include, Delorean
 
 Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each {|f| require f}

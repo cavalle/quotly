@@ -1,3 +1,11 @@
+/*
+ * This is a manifest file that'll automatically include all the stylesheets available in this directory
+ * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+ * the top of the compiled file, but it's generally better to create a new file per style scope.
+ *= require_self
+ *= require_tree . 
+*/
+
 /* mini-reset. Mamuso style */
 
 body {
@@ -8,7 +16,7 @@ body {
     font-weight: normal;
     line-height: 1.5em;
     text-align: center;
-    background-image:url(../images/bg2.png);
+    background-image:url(../assets/bg2.png);
     color:#373c52;
 }
 
@@ -46,7 +54,7 @@ a {
   display:block;
   width:23.9em;
   height:8.1em;
-  background:white url(../images/logo.png) no-repeat scroll center center;
+  background:white url(../assets/logo.png) no-repeat scroll center center;
 }
 
 #header h1 a span{
@@ -315,19 +323,19 @@ form#providers_signin button:hover {
 }
 
 form#providers_signin button#login_with_google {
-  background-image: url(../images/login_providers/google.png);
+  background-image: url(../assets/login_providers/google.png);
 }
 
 form#providers_signin button#login_with_yahoo {
-  background-image: url(../images/login_providers/yahoo.png);
+  background-image: url(../assets/login_providers/yahoo.png);
 }
 
 form#providers_signin button#login_with_flickr {
-  background-image: url(../images/login_providers/flickr.png);
+  background-image: url(../assets/login_providers/flickr.png);
 }
 
 form#providers_signin button#login_with_facebook {
-  background-image: url(../images/login_providers/facebook.png);
+  background-image: url(../assets/login_providers/facebook.png);
 }
 
 form#providers_signin button span {
@@ -344,7 +352,7 @@ form#openid_signin label {
 
 input#openid_identifier {
   width:17.0em;
-  background: #FFF url(../images/login_providers/openid.png) no-repeat scroll left bottom;
+  background: #FFF url(../assets/login_providers/openid.png) no-repeat scroll left bottom;
   padding-left:2.2em;
 }
 
