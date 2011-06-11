@@ -71,6 +71,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    minitest (2.0.2)
     multi_json (1.0.3)
     multi_xml (0.2.2)
     multipart-post (1.1.2)
@@ -181,6 +182,7 @@ DEPENDENCIES
   capybara
   delorean
   launchy
+  minitest
   mustache
   omniauth
   rails (~> 3.0.0)

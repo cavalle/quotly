@@ -10,6 +10,7 @@ gem 'omniauth'
 gem 'RedCloth', :require => 'redcloth'
 
 group :development, :test do
+  gem 'minitest'
   gem 'sqlite3'
   gem 'capybara'
   gem 'launchy'
