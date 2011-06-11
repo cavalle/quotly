@@ -1,9 +1,9 @@
-<h2><span><%= @presenter[:nickname] %>'s saved quotes</span></h2>
+<h2><span><%= @user[:nickname] %>'s saved quotes</span></h2>
 <div class="quotes">
-  <%= render :partial => 'quotes/quote', :collection => @presenter[:quotes] %>
-<% if @presenter[:quotes].empty? %>
+  <%= render :partial => 'quotes/quote', :collection => @user[:quotes] %>
+<% if @user[:quotes].empty? %>
   <div class="notice">
-    No quotes saved by <%= @presenter[:nickname] %> yet
+    No quotes saved by <%= @user[:nickname] %> yet
   </div>
 <% end %>
 </div>

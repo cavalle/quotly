@@ -8,6 +8,6 @@ Quotly::Application.routes.draw do
   get '/login'  => 'sessions#new',     :as => :login
   get '/logout' => 'sessions#destroy', :as => :logout
   get '/auth/twitter/callback' => 'sessions#create'
-  get '/:nickname' => 'users#show'
+  get '/:nickname' => 'users#show', :as => :user
   root :to => "home#show"
 end

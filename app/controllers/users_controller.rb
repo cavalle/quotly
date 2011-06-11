@@ -3,7 +3,7 @@ class UsersController < ApplicationController
     uid = session[:user_external_uid]
     reset_session
     session[:user_external_uid] = uid
-    @presenter = { :nickname => params[:nickname] }
+    @user = { :nickname => params[:nickname] }
   end
 
   def create
@@ -12,6 +12,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    @presenter = UserPresenter.find(params[:nickname])
+    @user = UserPresenter.find(params[:nickname])
   end
 end

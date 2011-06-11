@@ -1,6 +1,6 @@
 # encoding: UTF-8
 class HomeController < ApplicationController
   def show
-    @presenter = HomePresenter.find
+    @home = HomePresenter.find
   end
 end

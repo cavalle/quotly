@@ -1,5 +1,5 @@
 <form method="post" action="<%= users_path %>" id="register">
   <label for="nickname">Confirm your nickname</label>
-  <input type="text" id="nickname" name="user[nickname]" value="<%= params[:nickname] %>"/>
+  <input type="text" id="nickname" name="user[nickname]" value="<%= @user[:nickname] %>"/>
   <input type="submit" value="Register!"/>
 </form>
