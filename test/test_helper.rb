@@ -11,5 +11,7 @@ Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each {|f| require f}
 class MiniTest::Unit::TestCase
   def setup
     Redis::Objects.redis.flushdb
+    Capybara.reset_sessions!
+    Capybara.use_default_driver
   end
 end
