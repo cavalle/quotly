@@ -9,7 +9,7 @@ class UserPresenter < Presenter
   end
 
   def self.find(nickname)
-    Event.find(99999) unless users.include?(nickname)
+    raise ActiveRecord::RecordNotFound unless users.include?(nickname)
     { :nickname => nickname, :quotes => QuotePresenter.find_all(quotes(nickname)) }
   end
 
