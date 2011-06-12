@@ -124,7 +124,8 @@ feature 'Adding quotes' do
       add_quote :source => 'Sense and Sensibility'
       add_quote :source => 'It makes no sense'
       add_quote :source => 'My own sensibility'
-      add_quote :source => nil # Make sure empty sources doesn't break the functionality
+      add_quote :source => nil # Make sure empty sources don't break the functionality
+      
       login_as 'jdoe'
 
       visit '/'
