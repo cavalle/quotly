@@ -90,7 +90,6 @@ feature 'Adding quotes' do
   describe 'only JS' do
 
     before { Capybara.current_driver = Capybara.javascript_driver }
-    after  { Capybara.use_default_driver }
 
     scenario 'Author field is autocompleted' do
       user = register_user :nickname => 'jdoe'
