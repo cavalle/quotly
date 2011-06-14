@@ -5,7 +5,9 @@ module EventBus
 
     def init
       EventBus.current = Rails.configuration.event_bus.constantize.new
-      Rails.configuration.event_subscribers.each(&:constantize)
+      Rails.configuration.event_subscribers.each do |dir|
+        Dir[Rails.root.join(dir).join('**', '*.rb')].each(&method(:require_or_load))
+      end
     end
   end
 end

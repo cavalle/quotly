@@ -1,5 +1,5 @@
-<form method="post" action="<%= users_path %>" id="register">
+<%= form_tag users_path do %>
   <label for="nickname">Confirm your nickname</label>
   <input type="text" id="nickname" name="user[nickname]" value="<%= @user[:nickname] %>"/>
   <input type="submit" value="Register!"/>
-</form>
+<% end %>

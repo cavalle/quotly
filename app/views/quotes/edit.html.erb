@@ -1,5 +1,5 @@
 <h2><span>Amend a quote</span></h2>
-<form method="post" action="<%= quote_path(@quote[:uid]) %>" id="edit_quote" class="quote_form">
+<%= form_tag quote_path(@quote[:uid]), :id => 'edit_quote', :class => 'quote_form' do %>
   <input type='hidden' name='_method' value='put'></input>
   <label for="text">Quote</label>
   <textarea id="text" name="quote[text]"><%= @quote[:text] %></textarea>
@@ -8,4 +8,4 @@
   <label for="source">From</label>
   <input type="text" id="source" name="quote[source]" value="<%= @quote[:source] %>"/>
   <input type="submit" value="Amend quote"/>
-</form>
+<% end %>
