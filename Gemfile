@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-# gem 'rake', '0.8.7'
+gem 'rake', '0.8.7'
 gem 'rails', '3.1.0.rc4'
 gem 'sprockets', :git => 'git://github.com/sstephenson/sprockets.git'
 
@@ -31,4 +31,9 @@ group :development, :test do
   gem 'delorean'
   gem 'turn', :require => false
   gem 'database_cleaner'
+end
+
+group :production do
+  gem 'therubyracer-heroku', '0.8.1.pre3'
+  gem 'pg'
 end
